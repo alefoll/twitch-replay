@@ -1,0 +1,55 @@
+.calendar {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar--week {
+    flex: 1 1 auto;
+    display: flex;
+    margin: 25px;
+    overflow: hidden;
+    background-color: rgb(31, 31, 35);
+}
+
+.calendar--day,
+.calendar--content {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar--content {
+    flex: 1 1 auto;
+    position: relative;
+}
+
+.calendar--time {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    width: calc(100% + 30px);
+    left: -15px;
+    top: -24px;
+    font-weight: 600;
+    color: rgb(173, 173, 184);
+}
+
+.calendar--content__line,
+.calendar--day__element {
+    flex: 1 1 auto;
+    margin: 2px;
+}
+
+.calendar--day__element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    font-weight: 600;
+}
+
+.calendar--content__line {
+    position: relative;
+    background-color: rgb(14, 14, 16);
+}

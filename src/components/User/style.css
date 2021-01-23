@@ -1,0 +1,24 @@
+.user--list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.user {
+    height: 48px;
+    padding: 4px;
+}
+
+.user img {
+    height: 100%;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.user img:not(.loaded) {
+    border-color: transparent;
+}
+
+.user img.loaded {
+    border-color: #9147ff;
+}
