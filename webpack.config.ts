@@ -23,7 +23,16 @@ export default function(): Configuration {
                     exclude : /node_modules/,
                     options : {
                         name       : "[name].[ext]",
-                        outputPath : "/"
+                        publicPath : "/"
+                    }
+                }, {
+                    test    : /\.woff2$/,
+                    loader  : "file-loader",
+                    exclude : /node_modules/,
+                    options : {
+                        name       : "[name].[ext]",
+                        outputPath : "assets/",
+                        publicPath : "./assets/"
                     }
                 }, {
                     test    : /\.css$/,
@@ -37,8 +46,9 @@ export default function(): Configuration {
             plugins: [new TsconfigPathsPlugin({ configFile: "./tsconfig.json" })]
         },
         output: {
-            filename : "main.js",
-            path     : path.resolve(__dirname, "dist")
+            publicPath : "/twitch-replay",
+            filename   : "main.js",
+            path       : path.resolve(__dirname, "dist")
         },
         plugins: [new MiniCssExtractPlugin()],
         devServer: {
@@ -46,10 +56,7 @@ export default function(): Configuration {
             compress         : true,
             host             : "0.0.0.0",
             port             : 3000,
-            disableHostCheck : true,
-            staticOptions    : {
-                extensions: ["html"]
-            }
+            disableHostCheck : true
         }
     }
 };

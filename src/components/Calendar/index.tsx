@@ -84,7 +84,7 @@ export class Calendar extends React.PureComponent<CalendarProps> {
             }
         }
 
-        console.log(startHour, endHour);
+        // console.log(startHour, endHour);
 
         return (
             <div className="calendar">

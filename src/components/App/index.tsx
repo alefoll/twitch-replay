@@ -1,7 +1,8 @@
 import React from "react";
+
+import { Calendar } from "@components/Calendar";
 import { VideoApiModel, VideoModel, Video } from "@components/Video";
 import { User, UserModel } from "@components/User";
-import { Calendar } from "@components/Calendar";
 
 import "./style.css";
 
@@ -45,6 +46,8 @@ export class App extends React.PureComponent<{}, AppState> {
 
                 window.localStorage.setItem("token", hashParsed.access_token);
             }
+
+            window.location.hash = "";
         }
 
         if (token) {

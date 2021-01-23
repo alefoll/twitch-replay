@@ -8,7 +8,6 @@
     flex: 1 1 auto;
     display: flex;
     margin: 25px;
-    overflow: hidden;
     background-color: rgb(31, 31, 35);
 }
 
@@ -50,6 +49,7 @@
 }
 
 .calendar--content__line {
+    overflow: hidden;
     position: relative;
     background-color: rgb(14, 14, 16);
 }

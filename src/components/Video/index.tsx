@@ -106,8 +106,6 @@ export class Video extends React.PureComponent<VideoProps> {
     static readonly dateToSeconds = (created: string) => {
         const date = DateTime.fromISO(created).setZone("Europe/Paris");
 
-        console.log(date);
-
         const duration = Duration.fromObject({
             hours: date.hour,
             minutes: date.minute,
@@ -124,7 +122,7 @@ export class Video extends React.PureComponent<VideoProps> {
     }
 
     render() {
-        console.log(this.props);
+        // console.log(this.props);
 
         const {
             created_at,
