@@ -125,7 +125,7 @@ export class App extends React.PureComponent<{}, AppState> {
     }
 
     private readonly getToken = () => {
-        window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${ this.clientID }&redirect_uri=http://localhost:3000&response_type=token`);
+        window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${ this.clientID }&redirect_uri=https://alefoll.github.io/twitch-replay/&response_type=token`);
 
     }
 
