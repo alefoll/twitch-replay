@@ -1,3 +1,37 @@
+@font-face {
+    font-family: Roobert;
+    font-weight: 400;
+    src: url(/assets/Roobert-Regular.woff2) format("woff2")
+}
+
+@font-face {
+    font-family: Roobert;
+    font-weight: 600;
+    src: url(/assets/Roobert-SemiBold.woff2) format("woff2")
+}
+
+@font-face {
+    font-family: Roobert;
+    font-weight: 700;
+    src: url(/assets/Roobert-Bold.woff2) format("woff2")
+}
+
+html,
+body,
+#app {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Roobert;
+    color: #ffffff;
+    background-color: rgb(14, 14, 16);
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+}
+
 .video {
     position: absolute;
     height: calc(100% - 8px);
@@ -48,31 +82,6 @@
     margin-left: 8px;
 }
 
-.user--list {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.user {
-    height: 48px;
-    padding: 4px;
-}
-
-.user img {
-    height: 100%;
-    border-radius: 50%;
-    border-style: solid;
-    border-width: 2px;
-}
-
-.user img:not(.loaded) {
-    border-color: transparent;
-}
-
-.user img.loaded {
-    border-color: #9147ff;
-}
-
 .calendar {
     flex: 1 1 auto;
     display: flex;
@@ -83,7 +92,6 @@
     flex: 1 1 auto;
     display: flex;
     margin: 25px;
-    overflow: hidden;
     background-color: rgb(31, 31, 35);
 }
 
@@ -125,8 +133,34 @@
 }
 
 .calendar--content__line {
+    overflow: hidden;
     position: relative;
     background-color: rgb(14, 14, 16);
+}
+
+.user--list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.user {
+    height: 48px;
+    padding: 4px;
+}
+
+.user img {
+    height: 100%;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.user img:not(.loaded) {
+    border-color: transparent;
+}
+
+.user img.loaded {
+    border-color: #9147ff;
 }
 
 h1 {
@@ -144,39 +178,5 @@ button {
     border-radius: 4px;
     cursor: pointer;
     margin: 0 auto;
-}
-
-@font-face {
-    font-family: Roobert;
-    font-weight: 400;
-    src: url(/twitch-replay/assets/Roobert-Regular.woff2) format("woff2")
-}
-
-@font-face {
-    font-family: Roobert;
-    font-weight: 600;
-    src: url(/twitch-replay/assets/Roobert-SemiBold.woff2) format("woff2")
-}
-
-@font-face {
-    font-family: Roobert;
-    font-weight: 700;
-    src: url(/twitch-replay/assets/Roobert-Bold.woff2) format("woff2")
-}
-
-html,
-body,
-#app {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: Roobert;
-    color: #ffffff;
-    background-color: rgb(14, 14, 16);
-}
-
-#app {
-    display: flex;
-    flex-direction: column;
 }
 
