@@ -149,19 +149,19 @@ button {
 @font-face {
     font-family: Roobert;
     font-weight: 400;
-    src: url(https://static.twitchcdn.net/assets/Roobert-Regular-3fe213a3618624fd7b71.woff2) format("woff2"),url(https://static.twitchcdn.net/assets/Roobert-Regular-014ea096b0f865fa4dd9.woff) format("woff")
+    src: url(/assets/Roobert-Regular.woff2) format("woff2")
 }
 
 @font-face {
     font-family: Roobert;
     font-weight: 600;
-    src: url(https://static.twitchcdn.net/assets/Roobert-SemiBold-df85158a0012c224b021.woff2) format("woff2"),url(https://static.twitchcdn.net/assets/Roobert-SemiBold-48a406bf82c48cfaa849.woff) format("woff")
+    src: url(/assets/Roobert-SemiBold.woff2) format("woff2")
 }
 
 @font-face {
     font-family: Roobert;
     font-weight: 700;
-    src: url(https://static.twitchcdn.net/assets/Roobert-Bold-7fda562c82c09fbabec2.woff2) format("woff2"),url(https://static.twitchcdn.net/assets/Roobert-Bold-e1ed2e0bbb575f1a395b.woff) format("woff")
+    src: url(/assets/Roobert-Bold.woff2) format("woff2")
 }
 
 html,
