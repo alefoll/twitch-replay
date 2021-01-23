@@ -149,19 +149,19 @@ button {
 @font-face {
     font-family: Roobert;
     font-weight: 400;
-    src: url(/assets/Roobert-Regular.woff2) format("woff2")
+    src: url(/twitch-replay/assets/Roobert-Regular.woff2) format("woff2")
 }
 
 @font-face {
     font-family: Roobert;
     font-weight: 600;
-    src: url(/assets/Roobert-SemiBold.woff2) format("woff2")
+    src: url(/twitch-replay/assets/Roobert-SemiBold.woff2) format("woff2")
 }
 
 @font-face {
     font-family: Roobert;
     font-weight: 700;
-    src: url(/assets/Roobert-Bold.woff2) format("woff2")
+    src: url(/twitch-replay/assets/Roobert-Bold.woff2) format("woff2")
 }
 
 html,
