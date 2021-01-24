@@ -1,10 +1,14 @@
 import React from "react";
 
 import { Calendar } from "@components/Calendar";
-import { VideoApiModel, VideoModel, Video } from "@components/Video";
+import { VideoApiModel, VideoModel } from "@components/Video";
 import { User, UserModel } from "@components/User";
 
 import "./style.css";
+
+import "../../../assets/TwitchExtrudedWordmarkPurple.svg";
+import { Login } from "@components/Login";
+import { Sidebar } from "@components/Sidebar";
 
 export interface AppState {
     token: string | undefined,
@@ -22,7 +26,7 @@ interface UserFollow {
 }
 
 export class App extends React.PureComponent<{}, AppState> {
-    private clientID = "gvmbg22kqruvfibmxm4dm5datn9yis";
+    static readonly clientID = "gvmbg22kqruvfibmxm4dm5datn9yis";
 
     constructor(props: {}) {
         super(props);
@@ -65,7 +69,7 @@ export class App extends React.PureComponent<{}, AppState> {
             const request = await fetch(`https://api.twitch.tv/helix/${ path }`, {
                 headers: {
                     "Authorization" : `Bearer ${ this.state.token }`,
-                    "Client-Id"     : this.clientID,
+                    "Client-Id"     : App.clientID,
                 }
             });
 
@@ -127,11 +131,6 @@ export class App extends React.PureComponent<{}, AppState> {
         }
     }
 
-    private readonly getToken = () => {
-        window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${ this.clientID }&redirect_uri=https://alefoll.github.io/twitch-replay/&response_type=token`);
-
-    }
-
     private readonly getUsers = async (userIDs: string[] = []): Promise<UserModel[]> => {
         let query = "";
 
@@ -172,8 +171,8 @@ export class App extends React.PureComponent<{}, AppState> {
         videos = videos.filter((video: VideoApiModel) => video.thumbnail_url !== "" && video.type === "archive");
 
         videos = videos.map((video: VideoApiModel): VideoModel => {
-            const startInSeconds = Video.dateToSeconds(video.created_at);
-            const endInSeconds = startInSeconds + Video.durationToSeconds(video.duration);
+            const startInSeconds = Calendar.dateToSeconds(video.created_at);
+            const endInSeconds = startInSeconds + Calendar.durationToSeconds(video.duration);
 
             return {
                 ...video,
@@ -189,23 +188,21 @@ export class App extends React.PureComponent<{}, AppState> {
     }
 
     render() {
+        if (!this.state?.token) {
+            return <Login />;
+        }
+
         return (
             <>
-                <h1>Twitch Replay Calendar</h1>
+                <Sidebar users={ this.state?.users } getVideos={this.getVideosTruc} />
 
-                <button onClick={ this.getToken }>Get a token</button><br/>
+                <main className="app">
+                    <h1 className="app--title">Replay Calendar</h1>
 
-                { this.state?.token &&
-                    <>
-                        <div>{ this.state?.me?.display_name }</div>
+                    {/* <div>{ this.state?.me?.display_name }</div> */}
 
-                        <div className="user--list">
-                            { this.state?.users?.map(user => <User key={ user.id } { ...user } getVideos={this.getVideosTruc} />) }
-                        </div>
-
-                        <Calendar users={ this.state?.users } />
-                    </>
-                }
+                    <Calendar users={ this.state?.users } />
+                </main>
             </>
         );
     }

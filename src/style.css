@@ -29,5 +29,22 @@ body,
 
 #app {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+}
+
+h1 {
+    font-size: 54px;
+}
+
+ button {
+    width: 248px;
+    background-color: #9146FF;
+    padding: 8px;
+    color: #ffffff;
+    font-size: 16px;
+    font-family: Roobert;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 auto;
 }

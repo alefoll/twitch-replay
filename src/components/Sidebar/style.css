@@ -1,0 +1,17 @@
+.sidebar {
+    flex: 0 1 auto;
+    height: 100%;
+    overflow: hidden;
+    width: 64px;
+    background: linear-gradient(200deg, #9146FF 35%, hsl(169, 100%, 50%) 100%);
+    animation: colorTransition 5s alternate infinite;
+}
+
+.sidebar--twitch-logo {
+    width: 42px;
+    margin: 11px 11px 32px;
+}
+
+.sidebar--userlist {
+    padding: 0 4px;
+}

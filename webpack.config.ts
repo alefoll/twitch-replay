@@ -26,7 +26,7 @@ export default function(): Configuration {
                         publicPath : "/"
                     }
                 }, {
-                    test    : /\.woff2$/,
+                    test    : /\.(svg|woff2)$/,
                     loader  : "file-loader",
                     exclude : /node_modules/,
                     options : {

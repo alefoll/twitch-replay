@@ -7,8 +7,10 @@
 .calendar--week {
     flex: 1 1 auto;
     display: flex;
-    margin: 25px;
-    background-color: rgb(31, 31, 35);
+    margin: 16px;
+    border-radius: 4px;
+    background: linear-gradient(200deg, #9146FF 35%, hsl(169, 100%, 50%) 100%);
+    animation: colorTransition 5s alternate infinite;
 }
 
 .calendar--day,
@@ -36,7 +38,21 @@
 .calendar--content__line,
 .calendar--day__element {
     flex: 1 1 auto;
-    margin: 2px;
+    margin-top: 4px;
+    margin-right: 4px;
+}
+
+.calendar--content__line:last-child,
+.calendar--day__element:last-child {
+    margin-bottom: 4px;
+}
+
+.calendar--content__line:nth-child(2) {
+    border-radius: 0 4px 0 0;
+}
+
+.calendar--content__line:last-child {
+    border-radius: 0 0 4px 0;
 }
 
 .calendar--day__element {
@@ -51,5 +67,9 @@
 .calendar--content__line {
     overflow: hidden;
     position: relative;
+    background-color: rgb(14, 14, 16);
+}
+
+.calendar--content__line:nth-child(even) {
     background-color: rgb(14, 14, 16);
 }

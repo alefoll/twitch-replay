@@ -9,8 +9,9 @@
     color: #fff;
     text-decoration: none;
     border-radius: 0 4px 4px 0;
-    background-color: #9147ff;
-    transition: width .2s;
+    background-color: #9146FF;
+    box-shadow: 0 0 4px #000000;
+    transition: all .2s;
 }
 
 .video:visited {
@@ -23,6 +24,10 @@
     color: #fff;
     overflow: visible;
     width: 100% !important;
+    height: calc(100% - 8px) !important;
+    top: 0% !important;
+    border-radius: 0;
+    z-index: 1000;
 }
 
 .video--thumbnail {
