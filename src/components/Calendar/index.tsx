@@ -143,64 +143,86 @@ export class Calendar extends React.PureComponent<CalendarProps> {
         }
     }
 
-    private readonly laConcu = (videos: VideoModel[], videoIndex: number): { nb: number, index: number } => {
-        const result = {
-            nb    : 1,
-            index : 0
-        }
+    private readonly laConcu = (inputVideos: VideoModel[]): VideoModel[] => {
+        const videos = [...inputVideos];
 
-        let found = false;
+        for (let i = 0; i < videos.length; i++) {
+            const videoToCheck = videos[i];
 
-        const videoToCheck = videos[videoIndex];
+            const videosOverlappedStart = [];
+            const videosOverlappedEnd   = [];
+            const videosOverlappedBoth  = [];
+            const videosBeingOverlapped = [];
 
-        const videosOverlappedStart = [];
-        const videosOverlappedEnd   = [];
-        const videosOverlappedBoth  = [];
+            for (let j = 0; j < videos.length; j++) {
+                if (i !== j) {
+                    const video = videos[j];
 
-        for (let index = 0; index < videos.length; index++) {
-            const video = videos[index];
-
-            if (video !== videoToCheck) {
-                if ((
-                    (videoToCheck.startInSeconds > video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) &&
-                    (videoToCheck.endInSeconds   > video.startInSeconds && videoToCheck.endInSeconds   < video.endInSeconds)
-                ) || (
-                    (videoToCheck.startInSeconds < video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) &&
-                    (videoToCheck.endInSeconds   > video.startInSeconds && videoToCheck.endInSeconds   > video.endInSeconds)
-                )) {
-                    videosOverlappedBoth.push(video);
-
-                    if (!found) {
-                        result.index++;
-                    }
-                } else if (videoToCheck.startInSeconds > video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) {
-                    videosOverlappedStart.push(video);
-
-                    if (!found) {
-                        result.index++;
-                    }
-                } else if (videoToCheck.endInSeconds > video.startInSeconds && videoToCheck.endInSeconds < video.endInSeconds) {
-                    videosOverlappedEnd.push(video);
-
-                    if (!found) {
-                        result.index++;
+                    if (
+                        (videoToCheck.startInSeconds > video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) &&
+                        (videoToCheck.endInSeconds   > video.startInSeconds && videoToCheck.endInSeconds   < video.endInSeconds)
+                    ) {
+                        videosBeingOverlapped.push(video);
+                    } else if (videoToCheck.startInSeconds < video.startInSeconds && videoToCheck.endInSeconds > video.endInSeconds) {
+                        videosOverlappedBoth.push(video);
+                    } else if (videoToCheck.startInSeconds > video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) {
+                        videosOverlappedStart.push(video);
+                    } else if (videoToCheck.endInSeconds > video.startInSeconds && videoToCheck.endInSeconds < video.endInSeconds) {
+                        videosOverlappedEnd.push(video);
                     }
                 }
-            } else {
-                found = true;
             }
+
+            videoToCheck.lineNumber = Math.max(
+                videoToCheck.lineNumber,
+                1 + Math.max(videosOverlappedStart.length, videosOverlappedEnd.length) + Math.max(videosOverlappedBoth.length, videosBeingOverlapped.length)
+            );
+
+            videoToCheck.lineIndex = 0;
+
+            if (videosOverlappedStart.length || videosBeingOverlapped.length) {
+                const fusion  = [...videosOverlappedStart, ...videosBeingOverlapped];
+                const indexes = fusion.map(_ => _.lineIndex);
+
+                let found = false;
+
+                for (let index = 0; index < fusion.length; index++) {
+                    if (!found && !indexes.includes(index)) {
+                        found = true;
+
+                        videoToCheck.lineIndex = index;
+                    }
+                }
+
+                if (!found) {
+                    videoToCheck.lineIndex = Math.max(...indexes) + 1;
+                }
+            }
+
+            for (let index = 0; index < videosOverlappedStart.length; index++) {
+                videosOverlappedStart[index].lineNumber = Math.max(videosOverlappedStart[index].lineNumber, videoToCheck.lineNumber);
+            }
+
+            for (let index = 0; index < videosOverlappedEnd.length; index++) {
+                videosOverlappedEnd[index].lineNumber = Math.max(videosOverlappedEnd[index].lineNumber, videoToCheck.lineNumber);
+            }
+
+            for (let index = 0; index < videosOverlappedBoth.length; index++) {
+                videosOverlappedBoth[index].lineNumber = Math.max(videosOverlappedBoth[index].lineNumber, videoToCheck.lineNumber);
+            }
+
+            for (let index = 0; index < videosBeingOverlapped.length; index++) {
+                videosBeingOverlapped[index].lineNumber = Math.max(videosBeingOverlapped[index].lineNumber, videoToCheck.lineNumber);
+            }
+
+            // console.log(videoToCheck.lineNumber, videoToCheck, videosOverlappedStart, videosOverlappedEnd, videosOverlappedBoth, videosBeingOverlapped);
         }
 
-        result.nb += videosOverlappedStart.length + videosOverlappedEnd.length + videosOverlappedBoth.length;
-
-        // console.log(videoToCheck, videosOverlappedStart, videosOverlappedEnd, videosOverlappedBoth);
-
-        // console.log(result);
-
-        return result;
+        return videos;
     }
 
     render() {
+        // const now = DateTime.local().minus({ days: 2 });
         const now = DateTime.local();
 
         const startOfWeek = now.startOf("week");
@@ -229,7 +251,13 @@ export class Calendar extends React.PureComponent<CalendarProps> {
 
         return (
             <div className="calendar">
-                {/* <div>{ startOfWeek.toLocaleString() } – { endOfWeek.toLocaleString() }</div> */}
+                <div className="calendar--weekpicker">
+                    <button>
+                        <svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M13.5 14.5L9 10l4.5-4.5L12 4l-6 6 6 6 1.5-1.5z"></path></g></svg>
+                    </button>
+                    { startOfWeek.toLocaleString() } – { endOfWeek.toLocaleString() }
+                    <button><svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M6.5 5.5L11 10l-4.5 4.5L8 16l6-6-6-6-1.5 1.5z"></path></g></svg></button>
+                </div>
 
                 <div className="calendar--week">
                     <div className="calendar--day">
@@ -247,18 +275,18 @@ export class Calendar extends React.PureComponent<CalendarProps> {
                         </div>
 
                         { videosByDay.map((videos, dayOfTheWeek) => {
+                            const videosWithLineInfo = this.laConcu(videos);
+
                             return (
                                 <div key={ dayOfTheWeek } className="calendar--content__line">
-                                    { videos.map((video, videoIndex) => {
-                                        const { nb, index } = this.laConcu(videos, videoIndex);
-                                        // console.log({ dayOfTheWeek, nb, index });
-
+                                    { videosWithLineInfo.map(video => {
                                         const style: { style: React.CSSProperties } = {
                                             style : {
                                                 left   : this.dateToPercentRelative(video.created_at, start) + "%",
                                                 width  : this.durationToPercentRelative(video.duration, end - start) + "%",
-                                                top    : ((100 / nb) * index) + "%",
-                                                height : `calc(${ 100 / nb }% - ${ nb > 1 ? 4 : 8 }px)`,
+                                                top    : ((100 / video.lineNumber) * video.lineIndex) + "%",
+                                                height : `calc(${ 100 / video.lineNumber }% - ${ video.lineIndex === 0 ? 8 : 4 }px)`
+
                                             }
                                         }
 

@@ -177,7 +177,9 @@ export class App extends React.PureComponent<{}, AppState> {
             return {
                 ...video,
                 startInSeconds,
-                endInSeconds
+                endInSeconds,
+                lineIndex: 0,
+                lineNumber: 1
             }
         });
 

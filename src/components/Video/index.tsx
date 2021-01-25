@@ -22,6 +22,8 @@ export interface VideoApiModel {
 export interface VideoModel extends VideoApiModel {
     startInSeconds: number;
     endInSeconds: number;
+    lineIndex:number;
+    lineNumber:number;
 }
 
 export interface VideoProps extends VideoModel {
@@ -38,6 +40,7 @@ export class Video extends React.PureComponent<VideoProps> {
 
         const {
             duration,
+            lineIndex,
             style,
             title,
             thumbnail_url,
@@ -45,7 +48,7 @@ export class Video extends React.PureComponent<VideoProps> {
         } = this.props;
 
         return (
-            <a className="video" style={ style } href={ url } target="_blank">
+            <a className={ "video" + ((lineIndex === 0) ? " video--first" : "") } style={ style } href={ url } target="_blank">
                 <div className="video--thumbnail">
                     <img className="video--thumbnail__image" src={ this.getThumbnail(thumbnail_url) } alt={ title }/>
                     <span className="video--thumbnail__duration">{ duration }</span>
