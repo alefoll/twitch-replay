@@ -73,17 +73,19 @@ export class App extends React.PureComponent<{}, AppState> {
                 }
             });
 
-            if (!request.ok) {
-                throw new Error("Token error");
+            if (request.status < 200 || request.status > 299) {
+                throw "Request error";
             }
 
             return request.json();
         } catch(error) {
-            window.localStorage.removeItem("token");
+            if (error === "Request error") {
+                window.localStorage.removeItem("token");
 
-            this.setState({
-                token: undefined
-            });
+                this.setState({
+                    token: undefined
+                });
+            }
         }
     }
 
@@ -97,6 +99,8 @@ export class App extends React.PureComponent<{}, AppState> {
         const userIDs = userFollow.map(follow => follow.to_id);
 
         const users = await this.getUsers(userIDs);
+
+        users.sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
 
         this.setState({ users });
 
@@ -134,8 +138,9 @@ export class App extends React.PureComponent<{}, AppState> {
     private readonly getUsers = async (userIDs: string[] = []): Promise<UserModel[]> => {
         let query = "";
 
-        if (userIDs.length > 0 && userIDs.length < 100) { // API limit 100
-            query = "?id=" + userIDs.join("&id=");
+
+        if (userIDs.length) {
+            query = "?id=" + userIDs.slice(0, 100).join("&id="); // API limit 100
         }
 
         const request = await this.api(`users${ query }`);

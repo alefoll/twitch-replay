@@ -9,9 +9,17 @@ export interface CalendarProps {
     users?: UserModel[];
 }
 
-export class Calendar extends React.PureComponent<CalendarProps> {
+export interface CalendarState {
+    week: number;
+}
+
+export class Calendar extends React.PureComponent<CalendarProps, CalendarState> {
     static readonly SECONDS_IN_DAY = 86400;
     static readonly TIMEZONE       = "Europe/Paris";
+
+    state = {
+        week: -1
+    }
 
     static readonly durationToPercent = (duration: string): number => {
         const seconds = Calendar.durationToSeconds(duration);
@@ -221,9 +229,28 @@ export class Calendar extends React.PureComponent<CalendarProps> {
         return videos;
     }
 
+    private setWeek = (week: number) => {
+        this.setState({
+            week
+        });
+    }
+
     render() {
-        // const now = DateTime.local().minus({ days: 2 });
-        const now = DateTime.local();
+        const { week } = this.state;
+
+        let now = DateTime.local();
+
+        if (week < 0) {
+            now = now.minus({
+                week: Math.abs(week)
+            });
+        }
+
+        if (week > 0) {
+            now = now.plus({
+                week: week
+            });
+        }
 
         const startOfWeek = now.startOf("week");
         const endOfWeek   = now.endOf("week");
@@ -252,11 +279,13 @@ export class Calendar extends React.PureComponent<CalendarProps> {
         return (
             <div className="calendar">
                 <div className="calendar--weekpicker">
-                    <button>
-                        <svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M13.5 14.5L9 10l4.5-4.5L12 4l-6 6 6 6 1.5-1.5z"></path></g></svg>
+                    <button onClick={ () => this.setWeek(week - 1) }>
+                        <svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M13.5 14.5L9 10l4.5-4.5L12 4l-6 6 6 6 1.5-1.5z" fill="#ffffff"></path></g></svg>
                     </button>
-                    { startOfWeek.toLocaleString() } – { endOfWeek.toLocaleString() }
-                    <button><svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M6.5 5.5L11 10l-4.5 4.5L8 16l6-6-6-6-1.5 1.5z"></path></g></svg></button>
+                    { startOfWeek.toFormat("dd/MM") } – { endOfWeek.toFormat("dd/MM") }
+                    <button onClick={ () => this.setWeek(week + 1) }>
+                        <svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M6.5 5.5L11 10l-4.5 4.5L8 16l6-6-6-6-1.5 1.5z" fill="#ffffff"></path></g></svg>
+                    </button>
                 </div>
 
                 <div className="calendar--week">

@@ -9,10 +9,16 @@
     top: 0;
     right: 0;
     margin: 42px 18px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 24px;
+    font-variant-numeric: proportional-nums;
 }
 
 .calendar--weekpicker button {
-    width: 32px;
+    width: 24px;
+    height: 24px;
     margin: 0 8px;
     padding: 4px;
 }
