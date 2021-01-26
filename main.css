@@ -114,10 +114,16 @@ h1 {
     top: 0;
     right: 0;
     margin: 42px 18px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 24px;
+    font-variant-numeric: proportional-nums;
 }
 
 .calendar--weekpicker button {
-    width: 32px;
+    width: 24px;
+    height: 24px;
     margin: 0 8px;
     padding: 4px;
 }
@@ -371,8 +377,10 @@ h1 {
 .sidebar {
     flex: 0 1 auto;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     overflow: hidden;
-    width: 64px;
     background: linear-gradient(200deg, #9146FF 35%, hsl(169, 100%, 50%) 100%);
     animation: colorTransition 5s alternate infinite;
 }
@@ -380,9 +388,16 @@ h1 {
 .sidebar--twitch-logo {
     width: 42px;
     margin: 11px 11px 32px;
+    flex-shrink: 0;
 }
 
 .sidebar--userlist {
-    padding: 0 4px;
+    /* padding: 0 4px; */
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+.sidebar--userlist::-webkit-scrollbar {
+  display: none;
 }
 
