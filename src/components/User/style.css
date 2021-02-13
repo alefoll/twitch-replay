@@ -15,5 +15,6 @@
 }
 
 .user img.loaded {
-    border-color: #9146FF;
+    /* border-color: #9146FF; */
+    border-color: #0f0;
 }

@@ -1,6 +1,7 @@
 .video {
     position: absolute;
     height: calc(100% - 8px);
+    /* max-height: 128px; */
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -21,10 +22,7 @@
 .video:hover {
     text-decoration: none;
     color: #fff;
-    overflow: visible;
     width: 100% !important;
-    height: calc(100% - 8px) !important;
-    top: 0% !important;
     border-radius: 0;
     z-index: 1000;
 }

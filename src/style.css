@@ -21,7 +21,7 @@ body,
 #app {
     margin: 0;
     padding: 0;
-    height: 100%;
+    min-height: 100vh;
     font-family: Roobert;
     color: #ffffff;
     background-color: rgb(14, 14, 16);

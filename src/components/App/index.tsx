@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Calendar } from "@components/Calendar";
-import { VideoApiModel, VideoModel } from "@components/Video";
+import { Video, VideoApiModel, VideoModel } from "@components/Video";
 import { User, UserModel } from "@components/User";
 
 import "./style.css";
@@ -104,20 +104,24 @@ export class App extends React.PureComponent<{}, AppState> {
 
         this.setState({ users });
 
-        // users.map(async (user) => {
-        //     const { videos, pagination: video_pagination } = await this.getVideos(user);
+        let usersssss: UserModel[] = [];
 
-        //     const stateUsers = [...this.state.users];
+        // usersssss = users.filter(_ => ['ero_g', 'domingo'].includes(_.login));
 
-        //     const stateUser = stateUsers.find(stateUser => stateUser.id === user.id);
+        users.map(async (user) => {
+            const { videos, pagination: video_pagination } = await this.getVideos(user);
 
-        //     if (stateUser) {
-        //         stateUser.videos = videos;
-        //         stateUser.video_pagination = video_pagination;
+            const stateUsers = [...this.state.users];
 
-        //         this.setState({ users: stateUsers });
-        //     }
-        // });
+            const stateUser = stateUsers.find(stateUser => stateUser.id === user.id);
+
+            if (stateUser) {
+                stateUser.videos = videos;
+                stateUser.video_pagination = video_pagination;
+
+                this.setState({ users: stateUsers });
+            }
+        });
     }
 
     private readonly getVideosTruc = async(user: UserModel) => {
@@ -176,15 +180,15 @@ export class App extends React.PureComponent<{}, AppState> {
         videos = videos.filter((video: VideoApiModel) => video.thumbnail_url !== "" && video.type === "archive");
 
         videos = videos.map((video: VideoApiModel): VideoModel => {
-            const startInSeconds = Calendar.dateToSeconds(video.created_at);
-            const endInSeconds = startInSeconds + Calendar.durationToSeconds(video.duration);
+            const start_in_seconds = Video.dateToSeconds(video.created_at);
+            const end_in_seconds   = start_in_seconds + Video.durationToSeconds(video.duration);
 
             return {
                 ...video,
-                startInSeconds,
-                endInSeconds,
+                start_in_seconds,
+                end_in_seconds,
                 lineIndex: 0,
-                lineNumber: 1
+                overlap: 0
             }
         });
 

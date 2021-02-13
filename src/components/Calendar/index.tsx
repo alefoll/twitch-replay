@@ -1,6 +1,6 @@
 import React from "react";
 import { UserModel } from "@components/User";
-import { Video, VideoModel } from "@components/Video";
+import { Video, VideoMetadata, VideoModel } from "@components/Video";
 
 import "./style.css";
 import { DateTime, Duration, Info } from "luxon";
@@ -18,89 +18,8 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     static readonly TIMEZONE       = "Europe/Paris";
 
     state = {
-        week: -1
-    }
-
-    static readonly durationToPercent = (duration: string): number => {
-        const seconds = Calendar.durationToSeconds(duration);
-
-        if (seconds) {
-            return (seconds / Calendar.SECONDS_IN_DAY) * 100;
-        } else {
-            throw new Error(`durationToPercent error : ${ duration }`);
-        }
-    }
-
-    private readonly durationToPercentRelative = (duration: string, diff: number) => {
-        const seconds = Calendar.durationToSeconds(duration);
-
-        if (seconds) {
-            return (seconds / diff ) * 100;
-        } else {
-            throw new Error(`durationToPercent error : ${ duration }`);
-        }
-    }
-
-    static readonly durationToSeconds = (duration: string): number => {
-        const parser = /(?:(?:(\d*)h)?(\d*)m)?(\d*)s/.exec(duration);
-
-        if (parser?.length !== 4) {
-            throw new Error(`Parser error : ${ duration }`);
-        }
-
-        const [, hour, minute, second] = parser;
-
-        const durationn = Duration.fromObject({
-            hours   : hour   ? parseInt(hour)   : 0,
-            minutes : minute ? parseInt(minute) : 0,
-            seconds : second ? parseInt(second) : 0
-        });
-
-        const { seconds } = durationn.shiftTo("seconds").toObject();
-
-        if (seconds) {
-            return seconds;
-        } else {
-            throw new Error(`durationToSeconds error : ${ duration }`);
-        }
-    }
-
-    static readonly dateToPercent = (created: string) => {
-        const seconds = Calendar.dateToSeconds(created);
-
-        if (seconds) {
-            return (seconds / Calendar.SECONDS_IN_DAY) * 100;
-        } else {
-            throw new Error(`dateToPercent error : ${ created }`);
-        }
-    }
-
-    private readonly dateToPercentRelative = (created: string, begin: number) => {
-        const seconds = Calendar.dateToSeconds(created);
-
-        if (seconds) {
-            return ((seconds - begin) / Calendar.SECONDS_IN_DAY) * 100;
-        } else {
-            throw new Error(`dateToPercentRelative error : ${ created }`);
-        }
-    }
-
-    static readonly dateToSeconds = (created: string) => {
-        const date = DateTime.fromISO(created).setZone(Calendar.TIMEZONE);
-
-        const duration = Duration.fromObject({
-            hours   : date.hour,
-            minutes : date.minute,
-            seconds : date.second
-        });
-
-        const { seconds } = duration.shiftTo("seconds").toObject();
-
-        if (seconds) {
-            return seconds;
-        } else {
-            throw new Error(`dateToSeconds error : ${ created }`);
-        }
+        // week: -1
+        week: 0
     }
 
     private readonly getVideos = (from: DateTime, to: DateTime) => {
@@ -121,10 +40,61 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         }, [] as VideoModel[]);
 
         if (videos) {
-            videos.sort((a, b) => a.startInSeconds - b.startInSeconds);
+            videos.sort((a, b) => a.start_in_seconds - b.start_in_seconds);
         }
 
         return videos || [];
+
+        // return [{
+        //     start: 50_000,  // 1
+        //     end: 70_000
+        // }, {
+        //     start: 55_000,  // 2
+        //     end: 71_000
+        // }, {
+        //     start: 50_500,  // 3
+        //     end: 72_000
+        // }, {
+        //     start: 40_000,  // 4
+        //     end: 75_000
+        // }, {
+        //     start: 60_000,  // 5
+        //     end: 61_000
+        // }, {
+        //     start: 80_000,  // 6
+        //     end: 81_000
+        // }, {
+        //     start: 45_000,  // 7
+        //     end: 78_000
+        // }, {
+        //     start: 41_000,  // 8
+        //     end: 50_000
+        // }, {
+        //     start: 43_000,  // 9
+        //     end: 53_000
+        // }].map((_, index) => {
+        //     return {
+        //         created_at: "2021-02-05T12:56:05Z",
+        //         description: "",
+        //         duration: "5h44m54s",
+        //         start_in_seconds: _.start,
+        //         end_in_seconds: _.end,
+        //         id: index,
+        //         language: "fr",
+        //         lineIndex: 0,
+        //         overlap: 0,
+        //         published_at: "2021-02-05T12:56:05Z",
+        //         thumbnail_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+        //         title: `${ index + 1 }eer Video - ${ index + 1 }e`,
+        //         type: "archive",
+        //         url: "https://www.twitch.tv/videos/901834920",
+        //         user_id: "40063341",
+        //         user_login: "domingo",
+        //         user_name: "Domingo",
+        //         view_count: 167673,
+        //         viewable: "public"
+        //     }
+        // });
     }
 
     private readonly getVideosByDay = (videos: VideoModel[]) => {
@@ -140,8 +110,8 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     private readonly getMinMaxHours = (videos: VideoModel[]): { start: number, end: number } => {
         if (videos.length) {
             return {
-                start : Math.min(Calendar.SECONDS_IN_DAY, ...videos.map(_ => _.startInSeconds)),
-                end   : Math.max(0,                       ...videos.map(_ => _.endInSeconds))
+                start : Math.min(Calendar.SECONDS_IN_DAY, ...videos.map(_ => _.start_in_seconds)),
+                end   : Math.max(0,                       ...videos.map(_ => _.end_in_seconds))
             }
         }
 
@@ -152,79 +122,83 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     }
 
     private readonly laConcu = (inputVideos: VideoModel[]): VideoModel[] => {
-        const videos = [...inputVideos];
+        const videos = inputVideos.map(video => {
+            video.lineIndex = 0;
+
+            return video;
+        });
+
+        const videosMetadata: VideoMetadata[] = [];
 
         for (let i = 0; i < videos.length; i++) {
-            const videoToCheck = videos[i];
+            const video = videos[i];
 
-            const videosOverlappedStart = [];
-            const videosOverlappedEnd   = [];
-            const videosOverlappedBoth  = [];
-            const videosBeingOverlapped = [];
-
-            for (let j = 0; j < videos.length; j++) {
-                if (i !== j) {
-                    const video = videos[j];
-
-                    if (
-                        (videoToCheck.startInSeconds > video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) &&
-                        (videoToCheck.endInSeconds   > video.startInSeconds && videoToCheck.endInSeconds   < video.endInSeconds)
-                    ) {
-                        videosBeingOverlapped.push(video);
-                    } else if (videoToCheck.startInSeconds < video.startInSeconds && videoToCheck.endInSeconds > video.endInSeconds) {
-                        videosOverlappedBoth.push(video);
-                    } else if (videoToCheck.startInSeconds > video.startInSeconds && videoToCheck.startInSeconds < video.endInSeconds) {
-                        videosOverlappedStart.push(video);
-                    } else if (videoToCheck.endInSeconds > video.startInSeconds && videoToCheck.endInSeconds < video.endInSeconds) {
-                        videosOverlappedEnd.push(video);
-                    }
+            const metadata = videosMetadata[i] || {
+                overlap: {
+                    start : [],
+                    end   : [],
+                    inner : [],
+                    outer : []
                 }
-            }
+            };
 
-            videoToCheck.lineNumber = Math.max(
-                videoToCheck.lineNumber,
-                1 + Math.max(videosOverlappedStart.length, videosOverlappedEnd.length) + Math.max(videosOverlappedBoth.length, videosBeingOverlapped.length)
-            );
+            videos.map((videoToCheck) => {
+                const a = video;
+                const b = videoToCheck;
 
-            videoToCheck.lineIndex = 0;
+                if (a.id === b.id)
+                    return;
 
-            if (videosOverlappedStart.length || videosBeingOverlapped.length) {
-                const fusion  = [...videosOverlappedStart, ...videosBeingOverlapped];
-                const indexes = fusion.map(_ => _.lineIndex);
-
-                let found = false;
-
-                for (let index = 0; index < fusion.length; index++) {
-                    if (!found && !indexes.includes(index)) {
-                        found = true;
-
-                        videoToCheck.lineIndex = index;
-                    }
+                if (a.start_in_seconds < b.start_in_seconds && a.end_in_seconds > b.end_in_seconds) {
+                    metadata.overlap.outer.push(b);
+                    return;
                 }
 
-                if (!found) {
-                    videoToCheck.lineIndex = Math.max(...indexes) + 1;
+                if (a.start_in_seconds > b.start_in_seconds && a.end_in_seconds < b.end_in_seconds) {
+                    metadata.overlap.inner.push(b);
+                    return;
                 }
-            }
 
-            for (let index = 0; index < videosOverlappedStart.length; index++) {
-                videosOverlappedStart[index].lineNumber = Math.max(videosOverlappedStart[index].lineNumber, videoToCheck.lineNumber);
-            }
+                if (a.start_in_seconds < b.start_in_seconds && b.start_in_seconds < a.end_in_seconds) {
+                    metadata.overlap.start.push(b);
+                    return;
+                }
 
-            for (let index = 0; index < videosOverlappedEnd.length; index++) {
-                videosOverlappedEnd[index].lineNumber = Math.max(videosOverlappedEnd[index].lineNumber, videoToCheck.lineNumber);
-            }
+                if (b.start_in_seconds < a.start_in_seconds && a.start_in_seconds < b.end_in_seconds) {
+                    metadata.overlap.end.push(b);
+                    return;
+                }
+            });
 
-            for (let index = 0; index < videosOverlappedBoth.length; index++) {
-                videosOverlappedBoth[index].lineNumber = Math.max(videosOverlappedBoth[index].lineNumber, videoToCheck.lineNumber);
-            }
+            // console.log(video.id + 1, metadata.overlap);
 
-            for (let index = 0; index < videosBeingOverlapped.length; index++) {
-                videosBeingOverlapped[index].lineNumber = Math.max(videosBeingOverlapped[index].lineNumber, videoToCheck.lineNumber);
-            }
+            video.overlap = videos.length - 1;
 
-            // console.log(videoToCheck.lineNumber, videoToCheck, videosOverlappedStart, videosOverlappedEnd, videosOverlappedBoth, videosBeingOverlapped);
+            video.lineIndex = i;
+
+            // if (metadata.overlap.start.length || metadata.overlap.inner.length) {
+            //     const fusion  = [...metadata.overlap.start, ...metadata.overlap.inner];
+            //     const indexes = fusion.map(_ => _.lineIndex);
+
+            //     let found = false;
+
+            //     for (let index = 0; index < fusion.length; index++) {
+            //         if (!found && !indexes.includes(index)) {
+            //             found = true;
+
+            //             video.lineIndex = index;
+            //         }
+            //     }
+
+            //     if (!found) {
+            //         video.lineIndex = Math.max(...indexes) + 1;
+            //     }
+            // }
+
+            videosMetadata.push(metadata);
         }
+
+        // videos.map(video => console.log(video.id + 1, video.title, video.overlap, video.lineIndex));
 
         return videos;
     }
@@ -238,7 +212,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     render() {
         const { week } = this.state;
 
-        let now = DateTime.local();
+        let now = DateTime.local().setZone(Calendar.TIMEZONE);
 
         if (week < 0) {
             now = now.minus({
@@ -255,26 +229,33 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         const startOfWeek = now.startOf("week");
         const endOfWeek   = now.endOf("week");
 
+        now = now.minus({
+            day: 1
+        });
+
         const videos = this.getVideos(startOfWeek, endOfWeek);
+        // const videos = this.getVideos(now.startOf("day"), now.endOf("day"));
 
         const videosByDay = this.getVideosByDay(videos);
 
         // console.log(videosByDay);
 
-        const { start, end } = this.getMinMaxHours(videos);
+        const { start } = this.getMinMaxHours(videos);
+
+        const end = Calendar.SECONDS_IN_DAY;
 
         const startHour = Math.floor(start / 3600);
         const endHour   = Math.floor(end   / 3600);
 
         let hourToShow = [...Array((endHour - startHour) + 1).keys()];
 
-        if (hourToShow.length > 5) {
-            const modulus = Math.floor(hourToShow.length / 4);
+        // if (hourToShow.length > 12) {
+        //     hourToShow = hourToShow.filter(hour => hour%2 === 0);
+        // }
 
-            hourToShow = hourToShow.map((_, index) => index%modulus === 0 ? _ : -1).filter(_ => _ !== -1);
-        }
+        const vignette = 64;
 
-        // console.log(startHour, endHour, hourToShow);
+        // console.log('render');
 
         return (
             <div className="calendar">
@@ -289,33 +270,31 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                 </div>
 
                 <div className="calendar--week">
-                    <div className="calendar--day">
-                        { [...Array(7).keys()].map((day) => {
-                            return (
-                                <div key={ day } className="calendar--day__element">{ Info.weekdays("short",  { locale: "fr-FR" })[day] }<br/>{ startOfWeek.plus({ day }).toFormat("dd/MM") }</div>
-                            );
-                        }) }
+                    <div className="calendar--time">
+                        { hourToShow.map(hour => <div key={ hour }>{ (hour + startHour)%24 + ":00" }</div>) }
                     </div>
 
+                    { videosByDay.map((videos, dayOfTheWeek) => {
+                        // console.log(videos);
+                        const videosWithLineInfo = this.laConcu(videos);
+                        // console.log(videosWithLineInfo);
 
-                    <div className="calendar--content">
-                        <div className="calendar--time">
-                            { hourToShow.map(hour => <div key={ hour }>{ (startHour + hour)%24 + ":00" }</div>) }
-                        </div>
+                        return (
+                            <div key={ dayOfTheWeek } className="calendar--line" style={{ minHeight: (vignette * videosWithLineInfo.length) + "px" }}>
+                                <div className="calendar--line__day">{ Info.weekdays("short",  { locale: "fr-FR" })[dayOfTheWeek] }<br/>{ startOfWeek.plus({ day: dayOfTheWeek }).toFormat("dd/MM") }</div>
 
-                        { videosByDay.map((videos, dayOfTheWeek) => {
-                            const videosWithLineInfo = this.laConcu(videos);
+                                <div className="calendar--line__content">
+                                    <div className="calendar--line__time">
+                                        { hourToShow.map(hour => <div key={ hour }></div>) }
+                                    </div>
 
-                            return (
-                                <div key={ dayOfTheWeek } className="calendar--content__line">
                                     { videosWithLineInfo.map(video => {
                                         const style: { style: React.CSSProperties } = {
                                             style : {
-                                                left   : this.dateToPercentRelative(video.created_at, start) + "%",
-                                                width  : this.durationToPercentRelative(video.duration, end - start) + "%",
-                                                top    : ((100 / video.lineNumber) * video.lineIndex) + "%",
-                                                height : `calc(${ 100 / video.lineNumber }% - ${ video.lineIndex === 0 ? 8 : 4 }px)`
-
+                                                left   : (((video.start_in_seconds - start) / (end - start)) * 100) + "%",
+                                                width  : (((video.end_in_seconds - video.start_in_seconds) / (end - start)) * 100) + "%",
+                                                top    : ((100 / (video.overlap + 1)) * video.lineIndex) + "%",
+                                                height : `calc(${ 100 / (video.overlap + 1) }% - ${ video.lineIndex === 0 ? 8 : 4 }px)`
                                             }
                                         }
 
@@ -324,9 +303,9 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                                         );
                                     })}
                                 </div>
-                            );
-                        }) }
-                    </div>
+                            </div>
+                        );
+                    }) }
                 </div>
             </div>
         );
