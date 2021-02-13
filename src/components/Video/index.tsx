@@ -102,10 +102,8 @@ export class Video extends React.PureComponent<VideoProps> {
 
         return (
             <a className={ "video" + ((lineIndex === 0) ? " video--first" : "") } style={ style } href={ url } target="_blank">
-                <div className="video--thumbnail">
-                    <img className="video--thumbnail__image" src={ this.getThumbnail(thumbnail_url) } alt={ title }/>
-                    <span className="video--thumbnail__duration">{ duration }</span>
-                </div>
+                <img className="video--thumbnail__image" src={ this.getThumbnail(thumbnail_url) } alt={ title }/>
+                <span className="video--thumbnail__duration">{ duration }</span>
 
                 <div className="video--title">{ title }</div>
             </a>
