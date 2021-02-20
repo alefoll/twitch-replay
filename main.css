@@ -49,6 +49,27 @@ h1 {
     margin: 0 auto;
 }
 
+.user {
+    height: 48px;
+    padding: 4px;
+}
+
+.user img {
+    height: 100%;
+    background-color: #000000;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.user img:not(.loaded) {
+    border-color: transparent;
+}
+
+.user img.loaded {
+    border-color: #9146FF;
+}
+
 .video {
     position: absolute;
     height: calc(100% - 8px);
@@ -73,9 +94,18 @@ h1 {
 .video:hover {
     text-decoration: none;
     color: #fff;
-    width: 100% !important;
+    width: 1000% !important;
     border-radius: 0;
     z-index: 1000;
+}
+
+.video.video--copy:hover {
+    left: 0 !important;
+}
+
+.video--thumbnail {
+    position: relative;
+    height: 100%;
 }
 
 .video--thumbnail__image {
@@ -92,8 +122,39 @@ h1 {
     padding: 0 4px;
 }
 
+.video--thumbnail__user {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    transition: all .2s;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+}
+
+.video:hover .video--thumbnail__user {
+    left: 100%;
+    top: calc(50% - 22px);
+    bottom: calc(50% - 22px);
+}
+
+.video--thumbnail__user .user {
+    height: 36px;
+}
+
+.video--thumbnail__user img {
+    height: 32px;
+}
+
 .video--title {
     margin-left: 8px;
+    z-index: 200;
+    transition: all .2s;
+}
+
+.video:hover .video--title {
+    margin-left: 44px;
 }
 
 .calendar {
@@ -360,27 +421,6 @@ h1 {
     98% { background: linear-gradient(200deg, #9146FF 35%, hsl(48, 100%, 50%) 100%); }
     99% { background: linear-gradient(200deg, #9146FF 35%, hsl(51, 100%, 50%) 100%); }
     100% { background: linear-gradient(200deg, #9146FF 35%, hsl(53, 100%, 50%) 100%); }
-}
-
-.user {
-    height: 48px;
-    padding: 4px;
-}
-
-.user img {
-    height: 100%;
-    border-radius: 50%;
-    border-style: solid;
-    border-width: 2px;
-}
-
-.user img:not(.loaded) {
-    border-color: transparent;
-}
-
-.user img.loaded {
-    /* border-color: #9146FF; */
-    border-color: #0f0;
 }
 
 .sidebar {
