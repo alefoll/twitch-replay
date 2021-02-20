@@ -20,12 +20,12 @@ export interface UserModel {
 }
 
 export interface UserProps extends UserModel {
-    getVideos(user: UserProps, pagination?: string): Promise<void>;
+    getVideos?: (user: UserProps, pagination?: string) => Promise<void>;
 }
 
 export class User extends React.PureComponent<UserProps> {
     onClick = () => {
-        this.props.getVideos(this.props);
+        this.props.getVideos?.(this.props);
     }
 
     render() {

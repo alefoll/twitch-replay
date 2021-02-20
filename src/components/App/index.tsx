@@ -104,9 +104,9 @@ export class App extends React.PureComponent<{}, AppState> {
 
         this.setState({ users });
 
-        let usersssss: UserModel[] = [];
+        // let usersssss: UserModel[] = [];
 
-        // usersssss = users.filter(_ => ['ero_g', 'domingo'].includes(_.login));
+        // usersssss = users.filter(_ => ['rizotochaud', 'terracid'].includes(_.login));
 
         users.map(async (user) => {
             const { videos, pagination: video_pagination } = await this.getVideos(user);
@@ -188,7 +188,8 @@ export class App extends React.PureComponent<{}, AppState> {
                 start_in_seconds,
                 end_in_seconds,
                 lineIndex: 0,
-                overlap: 0
+                overlap: 0,
+                copy: false,
             }
         });
 

@@ -1,9 +1,9 @@
 import React from "react";
 import { UserModel } from "@components/User";
 import { Video, VideoMetadata, VideoModel } from "@components/Video";
+import { DateTime, Info } from "luxon";
 
 import "./style.css";
-import { DateTime, Duration, Info } from "luxon";
 
 export interface CalendarProps {
     users?: UserModel[];
@@ -15,6 +15,7 @@ export interface CalendarState {
 
 export class Calendar extends React.PureComponent<CalendarProps, CalendarState> {
     static readonly SECONDS_IN_DAY = 86400;
+    static readonly LOCALE         = "fr-FR";
     static readonly TIMEZONE       = "Europe/Paris";
 
     state = {
@@ -103,16 +104,25 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
 
             previous[videoDate.weekday - 1].push(video);
 
+            if (video.end_in_seconds > Calendar.SECONDS_IN_DAY && videoDate.weekday < 6) {
+                previous[videoDate.weekday].push({
+                    ...video,
+                    start_in_seconds: video.start_in_seconds - Calendar.SECONDS_IN_DAY,
+                    end_in_seconds: video.end_in_seconds - Calendar.SECONDS_IN_DAY,
+                    copy: true,
+                });
+            }
+
             return previous;
         }, [...Array(7).keys()].map(_ => [] as VideoModel[]));
     }
 
     private readonly getMinMaxHours = (videos: VideoModel[]): { start: number, end: number } => {
         if (videos.length) {
-            return {
-                start : Math.min(Calendar.SECONDS_IN_DAY, ...videos.map(_ => _.start_in_seconds)),
-                end   : Math.max(0,                       ...videos.map(_ => _.end_in_seconds))
-            }
+            const start = Math.min(...videos.map(_ => _.end_in_seconds > Calendar.SECONDS_IN_DAY ? 0 : _.start_in_seconds), Calendar.SECONDS_IN_DAY);
+            const end   = Math.max(...videos.map(_ => _.end_in_seconds > Calendar.SECONDS_IN_DAY ? Calendar.SECONDS_IN_DAY : _.end_in_seconds), start);
+
+            return { start, end }
         }
 
         return {
@@ -240,9 +250,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
 
         // console.log(videosByDay);
 
-        const { start } = this.getMinMaxHours(videos);
-
-        const end = Calendar.SECONDS_IN_DAY;
+        const { start, end } = this.getMinMaxHours(videos);
 
         const startHour = Math.floor(start / 3600);
         const endHour   = Math.floor(end   / 3600);
@@ -253,7 +261,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         //     hourToShow = hourToShow.filter(hour => hour%2 === 0);
         // }
 
-        const vignette = 64;
+        const vignette = 80;
 
         // console.log('render');
 
@@ -281,7 +289,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
 
                         return (
                             <div key={ dayOfTheWeek } className="calendar--line" style={{ minHeight: (vignette * videosWithLineInfo.length) + "px" }}>
-                                <div className="calendar--line__day">{ Info.weekdays("short",  { locale: "fr-FR" })[dayOfTheWeek] }<br/>{ startOfWeek.plus({ day: dayOfTheWeek }).toFormat("dd/MM") }</div>
+                                <div className="calendar--line__day">{ Info.weekdays("short",  { locale: Calendar.LOCALE })[dayOfTheWeek] }<br/>{ startOfWeek.plus({ day: dayOfTheWeek }).toFormat("dd/MM") }</div>
 
                                 <div className="calendar--line__content">
                                     <div className="calendar--line__time">
@@ -298,8 +306,10 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                                             }
                                         }
 
+                                        const user = this.props.users?.find((user) => user.id === video.user_id);
+
                                         return (
-                                            <Video key={ video.id } { ...video } { ...style } />
+                                            <Video key={ video.id } { ...video } user={ user } { ...style } />
                                         );
                                     })}
                                 </div>

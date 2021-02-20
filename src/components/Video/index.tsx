@@ -1,4 +1,5 @@
 import { Calendar } from "@components/Calendar";
+import { User, UserProps } from "@components/User";
 import { DateTime, Duration } from "luxon";
 import React from "react";
 
@@ -24,8 +25,9 @@ export interface VideoApiModel {
 export interface VideoModel extends VideoApiModel {
     start_in_seconds: number;
     end_in_seconds: number;
-    lineIndex:number;
-    overlap:number;
+    lineIndex: number;
+    overlap: number;
+    copy: boolean;
 }
 
 export interface VideoMetadata {
@@ -38,7 +40,8 @@ export interface VideoMetadata {
 }
 
 export interface VideoProps extends VideoModel {
-    style: React.CSSProperties
+    style: React.CSSProperties,
+    user?: UserProps
 }
 
 export class Video extends React.PureComponent<VideoProps> {
@@ -92,18 +95,35 @@ export class Video extends React.PureComponent<VideoProps> {
         // console.log(this.props);
 
         const {
+            copy,
             duration,
             lineIndex,
             style,
             title,
             thumbnail_url,
+            user,
             url
         } = this.props;
 
+        const className = ["video"];
+
+        if (lineIndex === 0) {
+            className.push("video--first");
+        }
+
+        if (copy) {
+            className.push("video--copy");
+        }
+
         return (
-            <a className={ "video" + ((lineIndex === 0) ? " video--first" : "") } style={ style } href={ url } target="_blank">
-                <img className="video--thumbnail__image" src={ this.getThumbnail(thumbnail_url) } alt={ title }/>
-                <span className="video--thumbnail__duration">{ duration }</span>
+            <a className={ className.join(" ") } style={ style } href={ url } target="_blank">
+                <div className="video--thumbnail">
+                    <img className="video--thumbnail__image" src={ this.getThumbnail(thumbnail_url) } alt={ title }/>
+                    { user && <div className="video--thumbnail__user">
+                        <User { ...user } />
+                    </div> }
+                    <span className="video--thumbnail__duration">{ duration }</span>
+                </div>
 
                 <div className="video--title">{ title }</div>
             </a>

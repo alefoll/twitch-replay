@@ -22,9 +22,18 @@
 .video:hover {
     text-decoration: none;
     color: #fff;
-    width: 100% !important;
+    width: 1000% !important;
     border-radius: 0;
     z-index: 1000;
+}
+
+.video.video--copy:hover {
+    left: 0 !important;
+}
+
+.video--thumbnail {
+    position: relative;
+    height: 100%;
 }
 
 .video--thumbnail__image {
@@ -41,6 +50,37 @@
     padding: 0 4px;
 }
 
+.video--thumbnail__user {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    transition: all .2s;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+}
+
+.video:hover .video--thumbnail__user {
+    left: 100%;
+    top: calc(50% - 22px);
+    bottom: calc(50% - 22px);
+}
+
+.video--thumbnail__user .user {
+    height: 36px;
+}
+
+.video--thumbnail__user img {
+    height: 32px;
+}
+
 .video--title {
     margin-left: 8px;
+    z-index: 200;
+    transition: all .2s;
+}
+
+.video:hover .video--title {
+    margin-left: 44px;
 }
