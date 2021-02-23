@@ -299,10 +299,11 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                                     { videosWithLineInfo.map(video => {
                                         const style: { style: React.CSSProperties } = {
                                             style : {
-                                                left   : (((video.start_in_seconds - start) / (end - start)) * 100) + "%",
-                                                width  : (((video.end_in_seconds - video.start_in_seconds) / (end - start)) * 100) + "%",
-                                                top    : ((100 / (video.overlap + 1)) * video.lineIndex) + "%",
-                                                height : `calc(${ 100 / (video.overlap + 1) }% - ${ video.lineIndex === 0 ? 8 : 4 }px)`
+                                                left     : (((video.start_in_seconds - start) / (end - start)) * 100) + "%",
+                                                width    : (((video.end_in_seconds - video.start_in_seconds) / (end - start)) * 100) + "%",
+                                                minWidth : (((video.end_in_seconds - video.start_in_seconds) / (end - start)) * 100) + "%",
+                                                top      : ((100 / (video.overlap + 1)) * video.lineIndex) + "%",
+                                                height   : `calc(${ 100 / (video.overlap + 1) }% - ${ video.lineIndex === 0 ? 8 : 4 }px)`
                                             }
                                         }
 

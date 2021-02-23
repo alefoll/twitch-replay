@@ -22,22 +22,25 @@
 .video:hover {
     text-decoration: none;
     color: #fff;
-    width: 1000% !important;
+    width: auto !important;
     border-radius: 0;
     z-index: 1000;
 }
 
 .video.video--copy:hover {
-    left: 0 !important;
+    left: 4px !important;
 }
 
 .video--thumbnail {
     position: relative;
     height: 100%;
+    flex-shrink: 0;
 }
 
 .video--thumbnail__image {
     height: 100%;
+    max-width: 100%;
+    display: block;
 }
 
 .video--thumbnail__duration {
@@ -78,9 +81,13 @@
 .video--title {
     margin-left: 8px;
     z-index: 200;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: all .2s;
 }
 
 .video:hover .video--title {
     margin-left: 44px;
+    margin-right: 16px;
 }
