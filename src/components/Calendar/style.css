@@ -100,23 +100,3 @@
     background-color: rgb(14, 14, 16);
     overflow: hidden;
 }
-
-/* .calendar--line:last-child {
-    margin-bottom: 4px;
-}
-
-.calendar--line:nth-child(2) {
-    border-radius: 0 4px 0 0;
-}
-
-.calendar--line:last-child {
-    border-radius: 0 0 4px 0;
-} */
-
-.calendar--line__content .video--first {
-    margin: 4px 0;
-}
-
-.calendar--line__content .video {
-    margin-bottom: 4px;
-}
