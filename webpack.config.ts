@@ -62,7 +62,7 @@ export default function(): Configuration {
         plugins: [new MiniCssExtractPlugin()],
         devServer: {
             contentBase      : path.resolve(__dirname, "dist"),
-            compress         : true,
+            compress         : false,
             host             : "0.0.0.0",
             port             : 3000,
             disableHostCheck : true

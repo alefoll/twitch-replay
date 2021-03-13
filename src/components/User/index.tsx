@@ -19,15 +19,7 @@ export interface UserModel {
     video_pagination?: string;
 }
 
-export interface UserProps extends UserModel {
-    getVideos?: (user: UserProps, pagination?: string) => Promise<void>;
-}
-
-export class User extends React.PureComponent<UserProps> {
-    onClick = () => {
-        this.props.getVideos?.(this.props);
-    }
-
+export class User extends React.PureComponent<UserModel> {
     render() {
         const {
             id,
@@ -38,7 +30,7 @@ export class User extends React.PureComponent<UserProps> {
         const loaded = this.props.videos;
 
         return (
-            <div className="user" onClick={this.onClick}>
+            <div className="user">
                 <img className={ loaded ? "loaded" : "" } key={ id } src={ profile_image_url } alt={ display_name }/>
             </div>
         )

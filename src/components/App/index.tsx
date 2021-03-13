@@ -2,7 +2,7 @@ import React from "react";
 
 import { Calendar } from "@components/Calendar";
 import { Video, VideoApiModel, VideoModel } from "@components/Video";
-import { User, UserModel } from "@components/User";
+import { UserModel } from "@components/User";
 
 import "./style.css";
 
@@ -106,7 +106,7 @@ export class App extends React.PureComponent<{}, AppState> {
 
         // let usersssss: UserModel[] = [];
 
-        // usersssss = users.filter(_ => ['rizotochaud', 'terracid'].includes(_.login));
+        // usersssss = users.filter(_ => ['xari', 'ponce', 'zerator', 'lestream', 'samueletienne', 'domingo', 'etoiles'].includes(_.login));
 
         users.map(async (user) => {
             const { videos, pagination: video_pagination } = await this.getVideos(user);
@@ -122,21 +122,6 @@ export class App extends React.PureComponent<{}, AppState> {
                 this.setState({ users: stateUsers });
             }
         });
-    }
-
-    private readonly getVideosTruc = async(user: UserModel) => {
-        const { videos, pagination: video_pagination } = await this.getVideos(user);
-
-        const stateUsers = [...this.state.users];
-
-        const stateUser = stateUsers.find(stateUser => stateUser.id === user.id);
-
-        if (stateUser) {
-            stateUser.videos = videos;
-            stateUser.video_pagination = video_pagination;
-
-            this.setState({ users: stateUsers });
-        }
     }
 
     private readonly getUsers = async (userIDs: string[] = []): Promise<UserModel[]> => {
@@ -206,7 +191,7 @@ export class App extends React.PureComponent<{}, AppState> {
 
         return (
             <>
-                <Sidebar users={ this.state?.users } getVideos={this.getVideosTruc} />
+                <Sidebar users={ this.state?.users } />
 
                 <main className="app">
                     <h1 className="app--title">Replay Calendar</h1>

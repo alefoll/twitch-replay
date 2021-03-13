@@ -1,5 +1,5 @@
 import { Calendar } from "@components/Calendar";
-import { User, UserProps } from "@components/User";
+import { User, UserModel } from "@components/User";
 import { DateTime, Duration } from "luxon";
 import React from "react";
 
@@ -41,7 +41,7 @@ export interface VideoMetadata {
 
 export interface VideoProps extends VideoModel {
     style: React.CSSProperties,
-    user?: UserProps
+    user?: UserModel
 }
 
 export class Video extends React.PureComponent<VideoProps> {

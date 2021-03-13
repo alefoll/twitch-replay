@@ -144,25 +144,29 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
 
         const videos: VideoModel[] = [];
 
-        inputVideos.map((video) => {
-            videos.map((prevVideo) => {
-                if (this.isBeetween(video.start_in_seconds, prevVideo.start_in_seconds, prevVideo.end_in_seconds)
-                 || this.isBeetween(video.end_in_seconds,   prevVideo.start_in_seconds, prevVideo.end_in_seconds)
-                 || (video.start_in_seconds < prevVideo.start_in_seconds && video.end_in_seconds > prevVideo.end_in_seconds)) {
-                    // console.log(video.id, prevVideo.id);
+        for (let i = 0; i < inputVideos.length; i++) {
+            const video = {...inputVideos[i]};
 
-                    if (video.lineIndex <= prevVideo.lineIndex) {
-                        video.lineIndex = prevVideo.lineIndex + 1;
+            for (let j = 0; j < videos.length; j++) {
+                const prevVideo = videos[j];
+
+                if (prevVideo.lineIndex === video.lineIndex) {
+                    if (this.isBeetween(video.start_in_seconds, prevVideo.start_in_seconds, prevVideo.end_in_seconds)
+                    || this.isBeetween(video.end_in_seconds,   prevVideo.start_in_seconds, prevVideo.end_in_seconds)
+                    || (video.start_in_seconds < prevVideo.start_in_seconds && video.end_in_seconds > prevVideo.end_in_seconds)) {
+                        video.lineIndex++;
+
+                        j = 0;
 
                         if (video.lineIndex > maxLineIndex) {
                             maxLineIndex = video.lineIndex;
                         }
                     }
                 }
-            });
+            }
 
             videos.push(video);
-        });
+        }
 
         return {
             videos,
