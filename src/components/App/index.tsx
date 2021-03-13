@@ -2,7 +2,7 @@ import React from "react";
 
 import { Calendar } from "@components/Calendar";
 import { Video, VideoApiModel, VideoModel } from "@components/Video";
-import { UserModel } from "@components/User";
+import { UserModel, UserProps } from "@components/User";
 
 import "./style.css";
 
@@ -14,7 +14,7 @@ export interface AppState {
     token: string | undefined,
 
     me: UserModel,
-    users: UserModel[];
+    users: UserProps[];
 }
 
 interface UserFollow {
@@ -102,13 +102,38 @@ export class App extends React.PureComponent<{}, AppState> {
 
         users.sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
 
-        this.setState({ users });
+        const defaultColors = [
+            "#9147ff",
+            "#fa1fd1",
+            "#8205b5",
+            "#00c7b0",
+            "#1f69ff",
+            "#fab5ff",
+            "#fa2929",
+            "#57bee6",
+            "#bf0078",
+            "#fc6675",
+            "#40145e",
+            "#ff6905",
+            "#bfabff",
+            "#ffc95e",
+            "#0014a6",
+        ]
 
-        // let usersssss: UserModel[] = [];
+        const colors: { login: string, color: string }[] = require("../../../assets/colors.json");
 
-        // usersssss = users.filter(_ => ['xari', 'ponce', 'zerator', 'lestream', 'samueletienne', 'domingo', 'etoiles'].includes(_.login));
+        const colorUsers = users.map((user, index) => {
+            const userProps: UserProps = {
+                ...user,
+                color: colors.find((_) => _.login === user.login)?.color ?? defaultColors[Math.floor(defaultColors.length * Math.random())],
+            }
 
-        users.map(async (user) => {
+            return userProps;
+        });
+
+        this.setState({ users: colorUsers });
+
+        colorUsers.map(async (user) => {
             const { videos, pagination: video_pagination } = await this.getVideos(user);
 
             const stateUsers = [...this.state.users];
@@ -155,7 +180,7 @@ export class App extends React.PureComponent<{}, AppState> {
         return result;
     }
 
-    private readonly getVideos = async (user: UserModel, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
+    private readonly getVideos = async (user: UserProps, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
         const request = await this.api(`videos?user_id=${ user.id }`);
 
         // console.log("getVideos", request.data);

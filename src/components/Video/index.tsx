@@ -1,5 +1,5 @@
 import { Calendar } from "@components/Calendar";
-import { User, UserModel } from "@components/User";
+import { User, UserProps } from "@components/User";
 import { DateTime, Duration } from "luxon";
 import React from "react";
 
@@ -41,7 +41,7 @@ export interface VideoMetadata {
 
 export interface VideoProps extends VideoModel {
     style: React.CSSProperties,
-    user?: UserModel
+    user?: UserProps
 }
 
 export class Video extends React.PureComponent<VideoProps> {
@@ -113,6 +113,10 @@ export class Video extends React.PureComponent<VideoProps> {
 
         if (copy) {
             className.push("video--copy");
+        }
+
+        if (user?.color) {
+            style.backgroundColor = user.color;
         }
 
         return (

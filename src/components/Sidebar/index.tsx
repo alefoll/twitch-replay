@@ -1,10 +1,10 @@
-import { User, UserModel } from "@components/User";
+import { User, UserProps } from "@components/User";
 import React from "react";
 
 import "./style.css";
 
 export interface SidebarProps {
-    users?: UserModel[];
+    users?: UserProps[];
 }
 
 export class Sidebar extends React.PureComponent<SidebarProps> {

@@ -19,20 +19,30 @@ export interface UserModel {
     video_pagination?: string;
 }
 
-export class User extends React.PureComponent<UserModel> {
+export interface UserProps extends UserModel {
+    color: string;
+}
+
+export class User extends React.PureComponent<UserProps> {
     render() {
         const {
             id,
+            color,
             display_name,
+            login,
             profile_image_url,
         } = this.props;
 
-        const loaded = this.props.videos;
+        const style: React.CSSProperties = {
+            borderColor: color
+        }
+
+        console.log(style);
 
         return (
-            <div className="user">
-                <img className={ loaded ? "loaded" : "" } key={ id } src={ profile_image_url } alt={ display_name }/>
-            </div>
+            <a className="user" href={ `https://www.twitch.tv/${ login }` } target="_blank">
+                <img key={ id } style={ style } src={ profile_image_url } alt={ display_name }/>
+            </a>
         )
     }
 }

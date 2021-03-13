@@ -1,12 +1,12 @@
 import React from "react";
-import { UserModel } from "@components/User";
+import { UserProps } from "@components/User";
 import { Video, VideoModel } from "@components/Video";
 import { DateTime, Info } from "luxon";
 
 import "./style.css";
 
 export interface CalendarProps {
-    users?: UserModel[];
+    users?: UserProps[];
 }
 
 export interface CalendarState {
