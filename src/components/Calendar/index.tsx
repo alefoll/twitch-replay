@@ -1,6 +1,6 @@
 import React from "react";
 import { UserModel } from "@components/User";
-import { Video, VideoMetadata, VideoModel } from "@components/Video";
+import { Video, VideoModel } from "@components/Video";
 import { DateTime, Info } from "luxon";
 
 import "./style.css";
@@ -47,32 +47,35 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         return videos || [];
 
         // return [{
-        //     start: 50_000,  // 1
+        //     start: 50_000,
         //     end: 70_000
         // }, {
-        //     start: 55_000,  // 2
+        //     start: 55_000,
         //     end: 71_000
         // }, {
-        //     start: 50_500,  // 3
+        //     start: 50_500,
         //     end: 72_000
         // }, {
-        //     start: 40_000,  // 4
+        //     start: 40_000,
         //     end: 75_000
         // }, {
-        //     start: 60_000,  // 5
+        //     start: 60_000,
         //     end: 61_000
         // }, {
-        //     start: 80_000,  // 6
+        //     start: 80_000,
         //     end: 81_000
         // }, {
-        //     start: 45_000,  // 7
+        //     start: 45_000,
         //     end: 78_000
         // }, {
-        //     start: 41_000,  // 8
+        //     start: 41_000,
         //     end: 50_000
         // }, {
-        //     start: 43_000,  // 9
+        //     start: 43_000,
         //     end: 53_000
+        // }, {
+        //     start: 44_000,
+        //     end: 44_500
         // }].map((_, index) => {
         //     return {
         //         copy: false,
@@ -137,25 +140,16 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     }
 
     private readonly laConcu = (inputVideos: VideoModel[]) => {
-        const videos: VideoModel[] = [];
-
         let maxLineIndex = 0;
 
-        for (let i = 0; i < inputVideos.length; i++) {
-            const video = { ...inputVideos[i] };
+        const videos: VideoModel[] = [];
 
-            let found = false;
-
-            for (let j = 0; j < videos.length; j++) {
-                const prevVideo = videos[j];
-
-                const a = video;
-                const b = prevVideo;
-
+        inputVideos.map((video) => {
+            videos.map((prevVideo) => {
                 if (this.isBeetween(video.start_in_seconds, prevVideo.start_in_seconds, prevVideo.end_in_seconds)
                  || this.isBeetween(video.end_in_seconds,   prevVideo.start_in_seconds, prevVideo.end_in_seconds)
                  || (video.start_in_seconds < prevVideo.start_in_seconds && video.end_in_seconds > prevVideo.end_in_seconds)) {
-                    found = true;
+                    // console.log(video.id, prevVideo.id);
 
                     if (video.lineIndex <= prevVideo.lineIndex) {
                         video.lineIndex = prevVideo.lineIndex + 1;
@@ -165,10 +159,10 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                         }
                     }
                 }
-            }
+            });
 
             videos.push(video);
-        }
+        });
 
         return {
             videos,

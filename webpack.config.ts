@@ -35,6 +35,15 @@ export default function(): Configuration {
                         publicPath : "./assets/"
                     }
                 }, {
+                    test    : /favicon\.png$/,
+                    loader  : "file-loader",
+                    exclude : /node_modules/,
+                    options : {
+                        name       : "[name].[ext]",
+                        outputPath : "/",
+                        publicPath : "./"
+                    }
+                }, {
                     test    : /\.css$/,
                     use: [MiniCssExtractPlugin.loader, "css-loader"]
                 }
