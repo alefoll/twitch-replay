@@ -24,19 +24,10 @@ export interface VideoApiModel {
 
 export interface VideoModel extends VideoApiModel {
     start_in_seconds: number;
+    duration_in_seconds: number;
     end_in_seconds: number;
     lineIndex: number;
-    overlap: number;
     copy: boolean;
-}
-
-export interface VideoMetadata {
-    overlap: {
-        start: VideoModel[],
-        end: VideoModel[],
-        inner: VideoModel[],
-        outer: VideoModel[]
-    }
 }
 
 export interface VideoProps extends VideoModel {
@@ -92,8 +83,6 @@ export class Video extends React.PureComponent<VideoProps> {
     }
 
     render() {
-        // console.log(this.props);
-
         const {
             copy,
             duration,

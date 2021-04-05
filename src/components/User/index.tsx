@@ -37,8 +37,6 @@ export class User extends React.PureComponent<UserProps> {
             borderColor: color
         }
 
-        console.log(style);
-
         return (
             <a className="user" href={ `https://www.twitch.tv/${ login }` } target="_blank">
                 <img key={ id } style={ style } src={ profile_image_url } alt={ display_name }/>

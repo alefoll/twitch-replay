@@ -19,18 +19,18 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     static readonly TIMEZONE       = "Europe/Paris";
 
     state = {
-        // week: -1
         week: 0
     }
 
-    private readonly getVideos = (from: DateTime, to: DateTime): VideoModel[] => {
+    private readonly getVideos = (from: DateTime, to: DateTime) => {
         const users = this.props.users?.filter(user => user.videos?.length);
 
         const videos = users?.reduce((previous, user) => {
             const filtered = user.videos?.filter((video) => {
-                const videoDate = DateTime.fromISO(video.created_at).setZone(Calendar.TIMEZONE);
+                const startDate = DateTime.fromISO(video.created_at).setZone(Calendar.TIMEZONE);
+                const endDate   = startDate.plus({ seconds: video.duration_in_seconds });
 
-                return videoDate > from && videoDate < to;
+                return (startDate > from && startDate < to) || (endDate > from && endDate < to) || (startDate < from && endDate > to);
             });
 
             if (filtered) {
@@ -45,71 +45,24 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         }
 
         return videos || [];
-
-        // return [{
-        //     start: 50_000,
-        //     end: 70_000
-        // }, {
-        //     start: 55_000,
-        //     end: 71_000
-        // }, {
-        //     start: 50_500,
-        //     end: 72_000
-        // }, {
-        //     start: 40_000,
-        //     end: 75_000
-        // }, {
-        //     start: 60_000,
-        //     end: 61_000
-        // }, {
-        //     start: 80_000,
-        //     end: 81_000
-        // }, {
-        //     start: 45_000,
-        //     end: 78_000
-        // }, {
-        //     start: 41_000,
-        //     end: 50_000
-        // }, {
-        //     start: 43_000,
-        //     end: 53_000
-        // }, {
-        //     start: 44_000,
-        //     end: 44_500
-        // }].map((_, index) => {
-        //     return {
-        //         copy: false,
-        //         created_at: "2021-03-08T12:56:05Z",
-        //         description: "",
-        //         duration: "5h44m54s",
-        //         start_in_seconds: _.start,
-        //         end_in_seconds: _.end,
-        //         id: index.toString(),
-        //         language: "fr",
-        //         lineIndex: 0,
-        //         overlap: 0,
-        //         published_at: "2021-03-08T12:56:05Z",
-        //         thumbnail_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
-        //         title: `${ index }eer Video - ${ index }e`,
-        //         type: "archive",
-        //         url: "https://www.twitch.tv/videos/901834920",
-        //         user_id: "40063341",
-        //         user_login: "domingo",
-        //         user_name: "Domingo",
-        //         view_count: 167673,
-        //         viewable: "public",
-        //     }
-        // });
     }
 
-    private readonly getVideosByDay = (videos: VideoModel[]): VideoModel[][] => {
+    private readonly getVideosByDay = (videos: VideoModel[]) => {
         return videos.reduce((previous, video) => {
             const videoDate = DateTime.fromISO(video.created_at).setZone(Calendar.TIMEZONE);
 
-            previous[videoDate.weekday - 1].push(video);
+            const yyyymmdd = videoDate.toFormat("yyyyMMdd");
 
-            if (video.end_in_seconds > Calendar.SECONDS_IN_DAY && videoDate.weekday < 6) {
-                previous[videoDate.weekday].push({
+            previous[yyyymmdd] = previous[yyyymmdd] || [];
+
+            previous[yyyymmdd].push(video);
+
+            if (video.end_in_seconds > Calendar.SECONDS_IN_DAY) {
+                const nextDay = videoDate.plus({ day: 1 }).toFormat("yyyyMMdd");
+
+                previous[nextDay] = previous[nextDay] || [];
+
+                previous[nextDay].push({
                     ...video,
                     start_in_seconds: video.start_in_seconds - Calendar.SECONDS_IN_DAY,
                     end_in_seconds: video.end_in_seconds - Calendar.SECONDS_IN_DAY,
@@ -118,10 +71,10 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
             }
 
             return previous;
-        }, [...Array(7).keys()].map(_ => [] as VideoModel[]));
+        }, {} as Record<string, VideoModel[]>);
     }
 
-    private readonly getMinMaxHours = (videos: VideoModel[]): { start: number, end: number } => {
+    private readonly getMinMaxHours = (videos: VideoModel[]) => {
         if (videos.length) {
             const start = Math.min(...videos.map(_ => _.end_in_seconds > Calendar.SECONDS_IN_DAY ? 0 : _.start_in_seconds), Calendar.SECONDS_IN_DAY);
             const end   = Math.max(...videos.map(_ => _.end_in_seconds > Calendar.SECONDS_IN_DAY ? Calendar.SECONDS_IN_DAY : _.end_in_seconds), start);
@@ -135,7 +88,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         }
     }
 
-    private readonly isBeetween = (number: number, min: number, max: number): boolean => {
+    private readonly isBeetween = (number: number, min: number, max: number) => {
         return number > min && number < max;
     }
 
@@ -205,11 +158,8 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
         });
 
         const videos = this.getVideos(startOfWeek, endOfWeek);
-        // const videos = this.getVideos(now.startOf("day"), now.endOf("day"));
 
         const videosByDay = this.getVideosByDay(videos);
-
-        // console.log(videosByDay);
 
         const { start, end } = this.getMinMaxHours(videos);
 
@@ -224,8 +174,6 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
 
         const vignetteMarginTopBottom = 6;
         const vignetteHeight = 80 + vignetteMarginTopBottom;
-
-        // console.log('render');
 
         return (
             <div className="calendar">
@@ -244,10 +192,8 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                         { hourToShow.map(hour => <div key={ hour }>{ (hour + startHour)%24 + ":00" }</div>) }
                     </div>
 
-                    { videosByDay.map((videos, dayOfTheWeek) => {
-                        // console.log(videos);
-                        const { videos: videosWithLineInfo, maxLineIndex } = this.laConcu(videos);
-                        // console.log(videosWithLineInfo);
+                    { [...Array(7).keys()].map((dayOfTheWeek) => {
+                        const { videos: videosWithLineInfo, maxLineIndex } = this.laConcu(videosByDay[startOfWeek.plus({ day: dayOfTheWeek }).toFormat("yyyyMMdd")] || []);
 
                         return (
                             <div key={ dayOfTheWeek } className="calendar--line" style={{ minHeight: ((vignetteHeight * maxLineIndex) + vignetteMarginTopBottom) + "px" }}>

@@ -55,7 +55,7 @@ export default function(): Configuration {
             plugins: [new TsconfigPathsPlugin({ configFile: "./tsconfig.json" })]
         },
         output: {
-            publicPath : "/twitch-replay",
+            publicPath : "/twitch-replay/",
             filename   : "main.js",
             path       : path.resolve(__dirname, "dist")
         },

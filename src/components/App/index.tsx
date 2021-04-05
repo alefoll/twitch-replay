@@ -3,12 +3,12 @@ import React from "react";
 import { Calendar } from "@components/Calendar";
 import { Video, VideoApiModel, VideoModel } from "@components/Video";
 import { UserModel, UserProps } from "@components/User";
+import { Login } from "@components/Login";
+import { Sidebar } from "@components/Sidebar";
 
 import "./style.css";
 
 import "../../../assets/TwitchExtrudedWordmarkPurple.svg";
-import { Login } from "@components/Login";
-import { Sidebar } from "@components/Sidebar";
 
 export interface AppState {
     token: string | undefined,
@@ -78,7 +78,7 @@ export class App extends React.PureComponent<{}, AppState> {
             }
 
             return request.json();
-        } catch(error) {
+        } catch (error) {
             if (error === "Request error") {
                 window.localStorage.removeItem("token");
 
@@ -122,7 +122,7 @@ export class App extends React.PureComponent<{}, AppState> {
 
         const colors: { login: string, color: string }[] = require("../../../assets/colors.json");
 
-        const colorUsers = users.map((user, index) => {
+        const colorUsers = users.map((user) => {
             const userProps: UserProps = {
                 ...user,
                 color: colors.find((_) => _.login === user.login)?.color ?? defaultColors[Math.floor(defaultColors.length * Math.random())],
@@ -159,8 +159,6 @@ export class App extends React.PureComponent<{}, AppState> {
 
         const request = await this.api(`users${ query }`);
 
-        // console.log("getUsers", request.data);
-
         return request.data;
     }
 
@@ -168,8 +166,6 @@ export class App extends React.PureComponent<{}, AppState> {
         const request = await this.api(`users/follows?from_id=${ user.id }&after=${ pagination }`);
 
         const result = request.data;
-
-        // console.log("getUserChannels", result);
 
         if (request.pagination.cursor) {
             const recursive = await this.getUserChannels(user, request.pagination.cursor);
@@ -181,24 +177,23 @@ export class App extends React.PureComponent<{}, AppState> {
     }
 
     private readonly getVideos = async (user: UserProps, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
-        const request = await this.api(`videos?user_id=${ user.id }`);
-
-        // console.log("getVideos", request.data);
+        const request = await this.api(`videos?user_id=${ user.id }&after=${ pagination }`);
 
         let videos = request.data;
 
         videos = videos.filter((video: VideoApiModel) => video.thumbnail_url !== "" && video.type === "archive");
 
         videos = videos.map((video: VideoApiModel): VideoModel => {
-            const start_in_seconds = Video.dateToSeconds(video.created_at);
-            const end_in_seconds   = start_in_seconds + Video.durationToSeconds(video.duration);
+            const start_in_seconds    = Video.dateToSeconds(video.created_at);
+            const duration_in_seconds = Video.durationToSeconds(video.duration);
+            const end_in_seconds      = start_in_seconds + duration_in_seconds;
 
             return {
                 ...video,
                 start_in_seconds,
+                duration_in_seconds,
                 end_in_seconds,
                 lineIndex: 0,
-                overlap: 0,
                 copy: false,
             }
         });
@@ -220,8 +215,6 @@ export class App extends React.PureComponent<{}, AppState> {
 
                 <main className="app">
                     <h1 className="app--title">Replay Calendar</h1>
-
-                    {/* <div>{ this.state?.me?.display_name }</div> */}
 
                     <Calendar users={ this.state?.users } />
                 </main>
