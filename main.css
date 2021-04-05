@@ -260,17 +260,6 @@ h1 {
     overflow: hidden;
 }
 
-.app {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    margin-left: 64px;
-}
-
-.app--title {
-    margin: 16px 0 16px 16px;
-}
-
 .login {
     position: absolute;
     top: 0;
@@ -435,5 +424,16 @@ h1 {
 
 .sidebar--userlist::-webkit-scrollbar {
   display: none;
+}
+
+.app {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    margin-left: 64px;
+}
+
+.app--title {
+    margin: 16px 0 16px 16px;
 }
 
