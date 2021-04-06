@@ -141,11 +141,59 @@ export class App extends React.PureComponent<{}, AppState> {
             const stateUser = stateUsers.find(stateUser => stateUser.id === user.id);
 
             if (stateUser) {
-                stateUser.videos = videos;
+                stateUser.videos = stateUser.videos || [];
+                stateUser.videos.push(...videos);
+
                 stateUser.video_pagination = video_pagination;
 
                 this.setState({ users: stateUsers });
             }
+        });
+
+        const streams = await this.getStreams(userIDs);
+
+        streams.map((stream) => {
+            const stateUsers = [...this.state.users];
+
+            const stateUser = stateUsers.find(stateUser => stateUser.id === stream.user_id);
+
+            if (stateUser) {
+                stateUser.isLive = true;
+                stateUser.videos = stateUser.videos || [];
+
+                stateUser.videos.push({
+                    ...stream,
+                    url: `https://www.twitch.tv/${ stateUser.login }`
+                });
+
+                this.setState({ users: stateUsers });
+            }
+        });
+    }
+
+    private readonly getStreams = async (userIDs: string[], pagination: string = ""): Promise<VideoModel[]> => {
+        const request = await this.api(`streams?user_id=${ userIDs.slice(0, 100).join("&user_id=") }&after=${ pagination }`);
+
+        const streams: VideoApiModel[] = request.data;
+
+        if (request.pagination.cursor) {
+            const recursive = await this.getStreams(userIDs.slice(100, 200), request.pagination.cursor);
+
+            streams.push(...recursive);
+        }
+
+        return streams.map((stream) => {
+            const start_in_seconds    = Video.dateToSeconds(stream.started_at!);
+            const end_in_seconds      = Calendar.SECONDS_IN_DAY;;
+            const duration_in_seconds = end_in_seconds - start_in_seconds;
+
+            return {
+                ...stream,
+                created_at: stream.started_at!,
+                start_in_seconds,
+                duration_in_seconds,
+                end_in_seconds,
+            };
         });
     }
 
@@ -179,13 +227,13 @@ export class App extends React.PureComponent<{}, AppState> {
     private readonly getVideos = async (user: UserProps, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
         const request = await this.api(`videos?user_id=${ user.id }&after=${ pagination }`);
 
-        let videos = request.data;
+        let data: VideoApiModel[] = request.data;
 
-        videos = videos.filter((video: VideoApiModel) => video.thumbnail_url !== "" && video.type === "archive");
+        data = data.filter((video) => video.thumbnail_url !== "" && video.type === "archive");
 
-        videos = videos.map((video: VideoApiModel): VideoModel => {
+        const videos: VideoModel[] = data.map((video) => {
             const start_in_seconds    = Video.dateToSeconds(video.created_at);
-            const duration_in_seconds = Video.durationToSeconds(video.duration);
+            const duration_in_seconds = Video.durationToSeconds(video.duration!);
             const end_in_seconds      = start_in_seconds + duration_in_seconds;
 
             return {
@@ -193,13 +241,11 @@ export class App extends React.PureComponent<{}, AppState> {
                 start_in_seconds,
                 duration_in_seconds,
                 end_in_seconds,
-                lineIndex: 0,
-                copy: false,
             }
         });
 
         return {
-            videos: videos,
+            videos,
             pagination: request.pagination,
         };
     }

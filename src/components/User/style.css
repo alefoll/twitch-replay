@@ -2,6 +2,7 @@
     height: 48px;
     padding: 4px;
     display: block;
+    position: relative;
 }
 
 .user img {
@@ -10,4 +11,22 @@
     border-radius: 50%;
     border-style: solid;
     border-width: 2px;
+}
+
+.user--live {
+    height: 16px;
+    width: 16px;
+    background-color: #e91916;
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    border-radius: 50%;
+}
+
+.video--thumbnail__user .user img:hover {
+    border-color: #ffffff !important;
+}
+
+.video--thumbnail__user .user--live {
+    display: none;
 }

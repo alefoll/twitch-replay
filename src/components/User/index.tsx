@@ -21,12 +21,14 @@ export interface UserModel {
 
 export interface UserProps extends UserModel {
     color: string;
+    isLive?: boolean;
 }
 
 export class User extends React.PureComponent<UserProps> {
     render() {
         const {
             id,
+            isLive,
             color,
             display_name,
             login,
@@ -40,6 +42,7 @@ export class User extends React.PureComponent<UserProps> {
         return (
             <a className="user" href={ `https://www.twitch.tv/${ login }` } target="_blank">
                 <img key={ id } style={ style } src={ profile_image_url } alt={ display_name }/>
+                { isLive && <span className="user--live" /> }
             </a>
         )
     }

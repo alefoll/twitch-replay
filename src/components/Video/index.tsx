@@ -7,18 +7,24 @@ import "./style.css";
 
 export interface VideoApiModel {
     created_at: string;
-    description: string;
-    duration: string;
+    description?: string;
+    duration?: string;
+    game_id?: string;
+    game_name?: string;
     id: string;
     language: string;
-    published_at: string;
+    published_at?: string;
+    started_at?: string;
+    tag_ids?: string;
     thumbnail_url: string;
-    title: string;
-    type: "upload" | "archive" | "highlight";
-    url: string;
+    title?: string;
+    type: "upload" | "archive" | "highlight" | "live";
+    url?: string;
     user_id: string;
+    user_login?: string;
     user_name: string;
-    view_count: number;
+    view_count?: number;
+    viewer_count?: number;
     viewable: "public" | "private";
 }
 
@@ -26,8 +32,8 @@ export interface VideoModel extends VideoApiModel {
     start_in_seconds: number;
     duration_in_seconds: number;
     end_in_seconds: number;
-    lineIndex: number;
-    copy: boolean;
+    lineIndex?: number;
+    copy?: boolean;
 }
 
 export interface VideoProps extends VideoModel {
@@ -78,8 +84,16 @@ export class Video extends React.PureComponent<VideoProps> {
         }
     }
 
-    private readonly getThumbnail = (url: string): string => {
-        return url.replace("%{width}x%{height}", "320x180");
+    private readonly getThumbnail = (url: string) => {
+        return url.replace(/%?{width}x%?{height}/, "320x180");
+    }
+
+    private readonly format = (number: number) => {
+        return new Intl.NumberFormat("en", {
+            // @ts-expect-error
+            notation: "compact",
+
+        }).format(number);
     }
 
     render() {
@@ -90,11 +104,14 @@ export class Video extends React.PureComponent<VideoProps> {
             style,
             title,
             thumbnail_url,
+            type,
             user,
-            url
+            url,
+            viewer_count
         } = this.props;
 
         const className = ["video"];
+        const isLive    = (type === "live");
 
         if (lineIndex === 0) {
             className.push("video--first");
@@ -102,6 +119,10 @@ export class Video extends React.PureComponent<VideoProps> {
 
         if (copy) {
             className.push("video--copy");
+        }
+
+        if (isLive) {
+            className.push("video--stream");
         }
 
         if (user?.color) {
@@ -115,7 +136,8 @@ export class Video extends React.PureComponent<VideoProps> {
                     { user && <div className="video--thumbnail__user">
                         <User { ...user } />
                     </div> }
-                    <span className="video--thumbnail__duration">{ duration }</span>
+                    { duration && <span className="video--thumbnail__duration">{ duration }</span> }
+                    { isLive && <span className="video--live">LIVE - { this.format(viewer_count!) }</span> }
                 </div>
 
                 <div className="video--title">{ title }</div>

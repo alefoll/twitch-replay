@@ -107,6 +107,8 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                     if (this.isBeetween(video.start_in_seconds, prevVideo.start_in_seconds, prevVideo.end_in_seconds)
                     || this.isBeetween(video.end_in_seconds,   prevVideo.start_in_seconds, prevVideo.end_in_seconds)
                     || (video.start_in_seconds < prevVideo.start_in_seconds && video.end_in_seconds > prevVideo.end_in_seconds)) {
+                        video.lineIndex = video.lineIndex || 0;
+
                         video.lineIndex++;
 
                         j = 0;
@@ -210,7 +212,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
                                                 left     : (((video.start_in_seconds - start) / (end - start)) * 100) + "%",
                                                 width    : (((video.end_in_seconds - video.start_in_seconds) / (end - start)) * 100) + "%",
                                                 minWidth : (((video.end_in_seconds - video.start_in_seconds) / (end - start)) * 100) + "%",
-                                                top      : ((vignetteHeight * video.lineIndex) + vignetteMarginTopBottom) + "px"
+                                                top      : ((vignetteHeight * (video.lineIndex || 0)) + vignetteMarginTopBottom) + "px"
                                             }
                                         }
 
