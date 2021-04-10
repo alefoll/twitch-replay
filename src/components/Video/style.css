@@ -23,12 +23,12 @@
     text-decoration: none;
     color: #fff;
     width: auto !important;
-    border-radius: 0;
     z-index: 1000;
 }
 
 .video--stream {
     border-radius: 0;
+    padding-right: 32px;
 }
 
 .video.video--copy:hover {

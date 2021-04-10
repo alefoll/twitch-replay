@@ -15,7 +15,7 @@ export interface VideoApiModel {
     language: string;
     published_at?: string;
     started_at?: string;
-    tag_ids?: string;
+    tag_ids?: string[];
     thumbnail_url: string;
     title?: string;
     type: "upload" | "archive" | "highlight" | "live";
@@ -25,7 +25,7 @@ export interface VideoApiModel {
     user_name: string;
     view_count?: number;
     viewer_count?: number;
-    viewable: "public" | "private";
+    viewable?: "public" | "private";
 }
 
 export interface VideoModel extends VideoApiModel {
@@ -126,7 +126,11 @@ export class Video extends React.PureComponent<VideoProps> {
         }
 
         if (user?.color) {
-            style.backgroundColor = user.color;
+            if (isLive) {
+                style.background = `linear-gradient(to right, ${ user.color } 90%, transparent)`;
+            } else {
+                style.backgroundColor = user.color;
+            }
         }
 
         return (
