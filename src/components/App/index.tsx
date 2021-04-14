@@ -176,7 +176,6 @@ export class App extends React.PureComponent<{}, AppState> {
         const request = await this.api(`streams?user_id=${ userIDs.slice(0, 100).join("&user_id=") }&after=${ pagination }`);
 
         const now = DateTime.now();
-        const seconds = now.hour * 3600 + now.minute * 60 + now.second;
 
         const streams: VideoApiModel[] = request.data;
 
@@ -186,10 +185,11 @@ export class App extends React.PureComponent<{}, AppState> {
             streams.push(...recursive);
         }
 
+        const duration_in_seconds = Video.dateToSeconds(now.toString());
+
         return streams.map((stream) => {
-            const start_in_seconds    = Video.dateToSeconds(stream.started_at!);
-            const end_in_seconds      = seconds;
-            const duration_in_seconds = end_in_seconds - start_in_seconds;
+            const start_in_seconds = Video.dateToSeconds(stream.started_at!);
+            const end_in_seconds   = start_in_seconds + duration_in_seconds;
 
             return {
                 ...stream,
