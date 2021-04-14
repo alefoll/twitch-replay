@@ -127,7 +127,7 @@ export class Video extends React.PureComponent<VideoProps> {
 
         if (user?.color) {
             if (isLive) {
-                style.background = `linear-gradient(to right, ${ user.color } 90%, transparent)`;
+                style.background = `linear-gradient(to right, ${ user.color } calc(100% - 42px), transparent)`;
             } else {
                 style.backgroundColor = user.color;
             }

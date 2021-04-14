@@ -84,6 +84,7 @@
 
 .video--title {
     margin-left: 8px;
+    margin-right: 8px;
     z-index: 200;
     white-space: nowrap;
     overflow: hidden;
@@ -94,6 +95,10 @@
 .video:hover .video--title {
     margin-left: 44px;
     margin-right: 16px;
+}
+
+.video.video--stream:hover .video--title {
+    margin-right: 32px;
 }
 
 .video--live {
