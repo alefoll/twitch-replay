@@ -1,5 +1,4 @@
 import React from "react";
-import { DateTime } from "luxon";
 
 import { Calendar } from "@components/Calendar";
 import { Video, VideoApiModel, VideoModel } from "@components/Video";
@@ -175,8 +174,6 @@ export class App extends React.PureComponent<{}, AppState> {
     private readonly getStreams = async (userIDs: string[], pagination: string = ""): Promise<VideoModel[]> => {
         const request = await this.api(`streams?user_id=${ userIDs.slice(0, 100).join("&user_id=") }&after=${ pagination }`);
 
-        const now = DateTime.now();
-
         const streams: VideoApiModel[] = request.data;
 
         if (request.pagination.cursor) {
@@ -185,11 +182,10 @@ export class App extends React.PureComponent<{}, AppState> {
             streams.push(...recursive);
         }
 
-        const duration_in_seconds = Video.dateToSeconds(now.toString());
-
         return streams.map((stream) => {
-            const start_in_seconds = Video.dateToSeconds(stream.started_at!);
-            const end_in_seconds   = start_in_seconds + duration_in_seconds;
+            const start_in_seconds    = Video.dateToSeconds(stream.started_at!);
+            const duration_in_seconds = Video.durationToNow(stream.started_at!);
+            const end_in_seconds      = start_in_seconds + duration_in_seconds;
 
             return {
                 ...stream,

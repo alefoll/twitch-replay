@@ -66,6 +66,19 @@ export class Video extends React.PureComponent<VideoProps> {
         }
     }
 
+    static readonly durationToNow = (started_at: string): number => {
+        const start = DateTime.fromISO(started_at).setZone(Calendar.TIMEZONE);
+        const now   = DateTime.now().setZone(Calendar.TIMEZONE);
+
+        const { seconds } = now.diff(start, "seconds");
+
+        if (seconds) {
+            return seconds;
+        } else {
+            throw new Error(`durationToNow error : ${ started_at }`);
+        }
+    }
+
     static readonly dateToSeconds = (created: string) => {
         const date = DateTime.fromISO(created).setZone(Calendar.TIMEZONE);
 
