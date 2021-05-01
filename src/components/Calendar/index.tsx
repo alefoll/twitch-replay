@@ -89,7 +89,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
     }
 
     private readonly isBeetween = (number: number, min: number, max: number) => {
-        return number > min && number < max;
+        return number >= min && number < max;
     }
 
     private readonly laConcu = (inputVideos: VideoModel[]) => {

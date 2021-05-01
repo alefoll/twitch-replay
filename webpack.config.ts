@@ -59,6 +59,7 @@ export default function(): Configuration {
             filename   : "main.js",
             path       : path.resolve(__dirname, "dist")
         },
+        // @ts-expect-error
         plugins: [new MiniCssExtractPlugin()],
         devServer: {
             contentBase      : path.resolve(__dirname, "dist"),
