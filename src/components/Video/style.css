@@ -12,6 +12,7 @@
     background-color: #9146FF;
     box-shadow: 0 0 4px #000000;
     transition: all .2s;
+    z-index: 1000;
 }
 
 .video:visited {
@@ -23,7 +24,7 @@
     text-decoration: none;
     color: #fff;
     width: auto !important;
-    z-index: 1000;
+    z-index: 1100;
 }
 
 .video--stream {

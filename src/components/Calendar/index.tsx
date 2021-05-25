@@ -191,7 +191,7 @@ export class Calendar extends React.PureComponent<CalendarProps, CalendarState> 
 
                 <div className="calendar--week">
                     <div className="calendar--time">
-                        { hourToShow.map(hour => <div key={ hour }>{ (hour + startHour)%24 + ":00" }</div>) }
+                        { hourToShow.map(hour => <div key={ hour }>{ ((hour + startHour)%24 + ":00").padStart(5, "0") }</div>) }
                     </div>
 
                     { [...Array(7).keys()].map((dayOfTheWeek) => {

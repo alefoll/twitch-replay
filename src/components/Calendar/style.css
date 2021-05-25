@@ -28,7 +28,7 @@
     flex-direction: column;
     display: flex;
     position: relative;
-    margin: 16px;
+    margin: 16px 24px 16px 16px;
     padding: 4px 4px 0 4px;
     border-radius: 4px;
     background: linear-gradient(200deg, #9146FF 35%, hsl(169, 100%, 50%) 100%);
@@ -39,8 +39,8 @@
     display: flex;
     justify-content: space-between;
     position: absolute;
-    width: calc(100% - 48px);
-    left: 64px;
+    width: calc(100% - 29px);
+    left: 53px;
     top: -24px;
     bottom: 0;
     font-weight: 600;
@@ -54,7 +54,8 @@
     padding: 2px 4px;
     border-radius: 4px;
     height: 20px;
-    z-index: 1000;
+    z-index: 2000;
+    font-variant-numeric: tabular-nums;
 }
 
 .calendar--line__time {
