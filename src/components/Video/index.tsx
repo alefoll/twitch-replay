@@ -103,9 +103,7 @@ export class Video extends React.PureComponent<VideoProps> {
 
     private readonly format = (number: number) => {
         return new Intl.NumberFormat("en", {
-            // @ts-expect-error
             notation: "compact",
-
         }).format(number);
     }
 
