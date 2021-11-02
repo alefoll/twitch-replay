@@ -12,9 +12,9 @@ export class Login extends React.PureComponent<{}> {
         return (
             <div className="login">
                 <div className="login--container">
-                    <div className="login--container__title"><img className="login--container__logo" src="./assets/TwitchGlitchPurple.svg" alt="Twitch"/> Log in to Twitch</div>
+                    <div className="login--container__title"><img className="login--container__logo" src="./assets/TwitchGlitchPurple.svg" alt="Twitch"/>Se connecter avec Twitch</div>
 
-                    <button onClick={ this.getToken }>Log In</button><br/>
+                    <button onClick={ this.getToken }>Se connecter</button><br/>
                 </div>
             </div>
         )

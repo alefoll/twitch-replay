@@ -16,32 +16,24 @@ export default function(): Configuration {
                 {
                     test    : /\.tsx?$/,
                     use     : "ts-loader",
-                    exclude : /node_modules/
-                }, {
-                    test    : /\.html$/,
-                    loader  : "file-loader",
                     exclude : /node_modules/,
-                    options : {
-                        name       : "[name].[ext]",
-                        publicPath : "/"
+                }, {
+                    test      : /\.html$/,
+                    type      : "asset/resource",
+                    generator : {
+                        filename: "[name][ext]",
                     }
                 }, {
-                    test    : /\.(svg|woff2)$/,
-                    loader  : "file-loader",
-                    exclude : /node_modules/,
-                    options : {
-                        name       : "[name].[ext]",
-                        outputPath : "assets/",
-                        publicPath : "./assets/"
+                    test      : /\.(png|svg|woff2)$/,
+                    type      : "asset/resource",
+                    generator : {
+                        filename: "assets/[name][ext]",
                     }
                 }, {
-                    test    : /favicon\.png$/,
-                    loader  : "file-loader",
-                    exclude : /node_modules/,
-                    options : {
-                        name       : "[name].[ext]",
-                        outputPath : "/",
-                        publicPath : "./"
+                    test      : /favicon\.png$/,
+                    type      : "asset/resource",
+                    generator : {
+                        filename: "[name][ext]",
                     }
                 }, {
                     test    : /\.css$/,
@@ -51,22 +43,21 @@ export default function(): Configuration {
         },
         resolve: {
             extensions: [".tsx", ".ts", ".js"],
-            // @ts-ignore
             plugins: [new TsconfigPathsPlugin({ configFile: "./tsconfig.json" })]
         },
         output: {
-            publicPath : "/twitch-replay/",
-            filename   : "main.js",
-            path       : path.resolve(__dirname, "dist")
+            filename : "main.js",
+            path     : path.resolve(__dirname, "dist")
         },
         // @ts-expect-error
         plugins: [new MiniCssExtractPlugin()],
         devServer: {
-            contentBase      : path.resolve(__dirname, "dist"),
-            compress         : false,
-            host             : "0.0.0.0",
-            port             : 3000,
-            disableHostCheck : true
+            static: {
+                publicPath: path.resolve(__dirname, "dist"),
+            },
+            allowedHosts : "all",
+            compress     : false,
+            port         : 3000,
         }
     }
 };

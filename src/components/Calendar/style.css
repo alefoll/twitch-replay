@@ -2,6 +2,7 @@
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .calendar--weekpicker {
@@ -100,4 +101,47 @@
     position: relative;
     background-color: rgb(14, 14, 16);
     overflow: hidden;
+}
+
+.calendar--empty {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar--card {
+    background-color: #18181b;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 6px 16px 0px, rgba(0, 0, 0, 0.4) 0px 0px 4px 0px;
+    padding: 0 30px 30px 30px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.calendar--card__img {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.calendar--card__img img {
+    margin-right: -58px;
+    margin-top: -29px;
+}
+
+.calendar--card__button {
+    display: flex;
+    align-items: center;
+    width: auto;
+    margin-top: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.calendar--card__button svg {
+    fill: #ffffff;
+    margin-right: 8px;
 }

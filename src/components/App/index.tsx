@@ -8,8 +8,6 @@ import { Sidebar } from "@components/Sidebar";
 
 import "./style.css";
 
-import "../../../assets/TwitchExtrudedWordmarkPurple.svg";
-
 export interface AppState {
     token: string | undefined,
 
@@ -27,11 +25,12 @@ interface UserFollow {
 
 export class App extends React.PureComponent<{}, AppState> {
     static readonly clientID = "gvmbg22kqruvfibmxm4dm5datn9yis";
+    static readonly tokenKey = "twitch-token";
 
     constructor(props: {}) {
         super(props);
 
-        let token = window.localStorage.getItem("token");
+        let token = window.localStorage.getItem(App.tokenKey);
 
         if (window.location.hash.length) {
             const hash = window.location.hash.slice(1);
@@ -48,7 +47,7 @@ export class App extends React.PureComponent<{}, AppState> {
             if (hashParsed.access_token != null) {
                 token = hashParsed.access_token;
 
-                window.localStorage.setItem("token", hashParsed.access_token);
+                window.localStorage.setItem(App.tokenKey, hashParsed.access_token);
             }
 
             window.location.hash = "";
@@ -57,7 +56,7 @@ export class App extends React.PureComponent<{}, AppState> {
         if (token) {
             this.state = {
                 ...this.state,
-                token: token
+                token,
             };
 
             this.init();
@@ -80,7 +79,7 @@ export class App extends React.PureComponent<{}, AppState> {
             return request.json();
         } catch (error) {
             if (error === "Request error") {
-                window.localStorage.removeItem("token");
+                window.localStorage.removeItem(App.tokenKey);
 
                 this.setState({
                     token: undefined
@@ -260,7 +259,7 @@ export class App extends React.PureComponent<{}, AppState> {
                 <Sidebar users={ this.state?.users } />
 
                 <main className="app">
-                    <h1 className="app--title">Replay Calendar</h1>
+                    <h1 className="app--title">Calendrier des VODs</h1>
 
                     <Calendar users={ this.state?.users } />
                 </main>
