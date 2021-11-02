@@ -7,7 +7,7 @@
 
 .calendar--weekpicker {
     position: absolute;
-    top: 0;
+    top: -100px;
     right: 0;
     margin: 42px 18px 0;
     display: flex;
@@ -57,6 +57,12 @@
     height: 20px;
     z-index: 2000;
     font-variant-numeric: tabular-nums;
+}
+
+@media screen and (max-width: 1500px) {
+  .calendar--time > div:nth-child(even) {
+    display: none;
+  }
 }
 
 .calendar--line__time {
