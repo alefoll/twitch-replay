@@ -14,7 +14,8 @@
         "target": "ESNext",
         "module": "ESNext",
         "paths": {
-            "@components/*": ["components/*"]
+            "@components/*": ["components/*"],
+            "@helpers/*": ["helpers/*"]
         }
     }
 }

@@ -1,7 +1,6 @@
-import { Calendar } from "@components/Calendar";
-import { User, UserProps } from "@components/User";
-import { DateTime, Duration } from "luxon";
 import React from "react";
+
+import { User, UserProps } from "@components/User";
 
 import "./style.css";
 
@@ -36,127 +35,71 @@ export interface VideoModel extends VideoApiModel {
     copy?: boolean;
 }
 
-export interface VideoProps extends VideoModel {
+export const Video = ({
+    style,
+    user,
+    video,
+}: {
     style: React.CSSProperties,
-    user?: UserProps
+    user?: UserProps,
+    video: VideoModel,
+}) => {
+    const {
+        copy,
+        duration,
+        lineIndex,
+        title,
+        thumbnail_url,
+        type,
+        url,
+        viewer_count
+    } = video;
+
+    const className = ["video"];
+    const isLive    = (type === "live");
+
+    if (lineIndex === 0) {
+        className.push("video--first");
+    }
+
+    if (copy) {
+        className.push("video--copy");
+    }
+
+    if (isLive) {
+        className.push("video--stream");
+    }
+
+    if (user?.color) {
+        if (isLive) {
+            style.background = `linear-gradient(to right, ${ user.color } calc(100% - 42px), transparent)`;
+        } else {
+            style.backgroundColor = user.color;
+        }
+    }
+
+    return (
+        <a className={ className.join(" ") } style={ style } href={ url } target="_blank">
+            <div className="video--thumbnail">
+                <img className="video--thumbnail__image" src={ getThumbnail(thumbnail_url) } alt={ title }/>
+                { user && <div className="video--thumbnail__user">
+                    <User user={ user } />
+                </div> }
+                { duration && <span className="video--thumbnail__duration">{ duration }</span> }
+                { isLive && <span className="video--live">LIVE - { format(viewer_count!) }</span> }
+            </div>
+
+            <div className="video--title">{ title }</div>
+        </a>
+    );
 }
 
-export class Video extends React.PureComponent<VideoProps> {
-    static readonly durationToSeconds = (duration: string): number => {
-        const parser = /(?:(?:(\d*)h)?(\d*)m)?(\d*)s/.exec(duration);
+const getThumbnail = (url: string) => {
+    return url.replace(/%?{width}x%?{height}/, "320x180");
+}
 
-        if (parser?.length !== 4) {
-            throw new Error(`Parser error : ${ duration }`);
-        }
-
-        const [, hour, minute, second] = parser;
-
-        const durationn = Duration.fromObject({
-            hours   : hour   ? parseInt(hour)   : 0,
-            minutes : minute ? parseInt(minute) : 0,
-            seconds : second ? parseInt(second) : 0
-        });
-
-        const { seconds } = durationn.shiftTo("seconds").toObject();
-
-        if (seconds) {
-            return seconds;
-        } else {
-            throw new Error(`durationToSeconds error : ${ duration }`);
-        }
-    }
-
-    static readonly durationToNow = (started_at: string): number => {
-        const start = DateTime.fromISO(started_at).setZone(Calendar.TIMEZONE);
-        const now   = DateTime.now().setZone(Calendar.TIMEZONE);
-
-        const { seconds } = now.diff(start, "seconds");
-
-        if (seconds) {
-            return seconds;
-        } else {
-            throw new Error(`durationToNow error : ${ started_at }`);
-        }
-    }
-
-    static readonly dateToSeconds = (created: string) => {
-        const date = DateTime.fromISO(created).setZone(Calendar.TIMEZONE);
-
-        const duration = Duration.fromObject({
-            hours   : date.hour,
-            minutes : date.minute,
-            seconds : date.second
-        });
-
-        const { seconds } = duration.shiftTo("seconds").toObject();
-
-        if (seconds) {
-            return seconds;
-        } else {
-            throw new Error(`dateToSeconds error : ${ created }`);
-        }
-    }
-
-    private readonly getThumbnail = (url: string) => {
-        return url.replace(/%?{width}x%?{height}/, "320x180");
-    }
-
-    private readonly format = (number: number) => {
-        return new Intl.NumberFormat("en", {
-            notation: "compact",
-        }).format(number);
-    }
-
-    render() {
-        const {
-            copy,
-            duration,
-            lineIndex,
-            style,
-            title,
-            thumbnail_url,
-            type,
-            user,
-            url,
-            viewer_count
-        } = this.props;
-
-        const className = ["video"];
-        const isLive    = (type === "live");
-
-        if (lineIndex === 0) {
-            className.push("video--first");
-        }
-
-        if (copy) {
-            className.push("video--copy");
-        }
-
-        if (isLive) {
-            className.push("video--stream");
-        }
-
-        if (user?.color) {
-            if (isLive) {
-                style.background = `linear-gradient(to right, ${ user.color } calc(100% - 42px), transparent)`;
-            } else {
-                style.backgroundColor = user.color;
-            }
-        }
-
-        return (
-            <a className={ className.join(" ") } style={ style } href={ url } target="_blank">
-                <div className="video--thumbnail">
-                    <img className="video--thumbnail__image" src={ this.getThumbnail(thumbnail_url) } alt={ title }/>
-                    { user && <div className="video--thumbnail__user">
-                        <User { ...user } />
-                    </div> }
-                    { duration && <span className="video--thumbnail__duration">{ duration }</span> }
-                    { isLive && <span className="video--live">LIVE - { this.format(viewer_count!) }</span> }
-                </div>
-
-                <div className="video--title">{ title }</div>
-            </a>
-        );
-    }
+const format = (number: number) => {
+    return new Intl.NumberFormat("en", {
+        notation: "compact",
+    }).format(number);
 }

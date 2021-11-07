@@ -1,0 +1,42 @@
+.no-follow--empty {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-follow--card {
+    background-color: #18181b;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 6px 16px 0px, rgba(0, 0, 0, 0.4) 0px 0px 4px 0px;
+    padding: 0 30px 30px 30px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.no-follow--card__img {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.no-follow--card__img img {
+    margin-right: -58px;
+    margin-top: -29px;
+}
+
+.no-follow--card__button {
+    display: flex;
+    align-items: center;
+    width: auto;
+    margin-top: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.no-follow--card__button svg {
+    fill: #ffffff;
+    margin-right: 8px;
+}

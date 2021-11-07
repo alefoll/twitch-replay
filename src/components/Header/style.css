@@ -1,0 +1,43 @@
+.header {
+    display: flex;
+    align-items: baseline;
+    margin: 16px 24px 16px 16px;
+}
+
+.header svg {
+    fill: #ffffff;
+}
+
+.header--title {
+    margin: 0;
+}
+
+.header--weekpicker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 16px;
+}
+
+.header--settings,
+.header--weekpicker button {
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header--weekpicker p {
+    width: 124px;
+    text-align: center;
+}
+
+.header--settings {
+    background-color: transparent;
+}
+
+.header--settings:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
