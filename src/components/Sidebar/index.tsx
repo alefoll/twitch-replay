@@ -1,9 +1,9 @@
 import React, { Suspense } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import { User } from "@components/User";
+import { User, UserProps } from "@components/User";
 
-import { getCurrentUserFollow } from "@helpers/user";
+import { getCurrentUserFollow, getFilteredUsers } from "@helpers/user";
 
 import "./style.css";
 
@@ -24,9 +24,19 @@ export const Sidebar = () => {
 const SidebarContent = () => {
     const users = useRecoilValue(getCurrentUserFollow);
 
+    const [filteredUsers, setFilteredUsers] = useRecoilState(getFilteredUsers);
+
+    const filterUser = (user: UserProps) => {
+        if (filteredUsers.includes(user)) {
+            return setFilteredUsers(filteredUsers.filter((filteredUser) => filteredUser.id !== user.id));
+        }
+
+        setFilteredUsers([ ...filteredUsers, user ]);
+    }
+
     return (
         <div className="sidebar--userlist">
-            { users.map(user => <User key={ user.id } user={ user } />) }
+            { users.map(user => <User key={ user.id } user={ user } onClick={ filterUser } hide={ filteredUsers.length > 0 && !filteredUsers.includes(user) } />) }
         </div>
     )
 }

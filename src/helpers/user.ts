@@ -12,15 +12,15 @@ import { VideoModel } from "@components/Video";
 const usersInitialState: UserProps[] = [];
 
 export const usersState = atom({
-  key: "usersState",
-  default: usersInitialState,
+    key: "usersState",
+    default: usersInitialState,
 });
 
 export const getCurrentUser = selector({
-  key: "getCurrentUser",
-  get: async ({ get }) => {
-    return (await getUsers(get(getToken)))[0];
-  }
+    key: "getCurrentUser",
+    get: async ({ get }) => {
+        return (await getUsers(get(getToken)))[0];
+    }
 });
 
 export const getCurrentUserFollow = selector<UserProps[]>({
@@ -63,10 +63,25 @@ export const getCurrentUserFollow = selector<UserProps[]>({
     }
 });
 
-export const getCurrentUserFollowVideos = selector({
-    key: "getCurrentUserFollowVideos",
-    get: async ({ get }) => {
+export const getCurrentUserFollowFiltered = selector<UserProps[]>({
+    key: "getCurrentUserFollowFiltered",
+    get: ({ get }) => {
         const users = get(getCurrentUserFollow);
+
+        const filteredUsers = get(getFilteredUsers);
+
+        if (filteredUsers.length === 0) {
+            return users;
+        } else {
+            return users.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.id));
+        }
+    }
+});
+
+export const getCurrentUserFollowFilteredVideos = selector({
+    key: "getCurrentUserFollowFilteredVideos",
+    get: async ({ get }) => {
+        const users = get(getCurrentUserFollowFiltered);
 
         const videos = get(waitForAny(
             users.map(user => getVideoByUserID(user.id))
@@ -95,6 +110,20 @@ export const getCurrentUserFollowLives = selector({
 
         return live;
     }
+});
+
+export const getCurrentUserFollowFilteredLives = selector({
+    key: "getCurrentUserFollowFilteredLives",
+    get: ({ get }) => {
+        const filteredUsers = get(getFilteredUsers);
+
+        return get(getCurrentUserFollowLives).filter(live => filteredUsers.find(user => user.id === live.user_id));
+    }
+});
+
+export const getFilteredUsers = atom<UserProps[]>({
+    key: "getFilteredUsers",
+    default: [],
 });
 
 const getUserChannels = async (token: string, user: UserModel, pagination: string = ""): Promise<UserFollow[]> => {

@@ -4,7 +4,7 @@ import { DateTime, Duration } from "luxon";
 import { api } from "@helpers/api";
 import { getSettings } from "@helpers/settings";
 import { getToken } from "@helpers/token";
-import { getCurrentUserFollow, getCurrentUserFollowLives, getCurrentUserFollowVideos } from "@helpers/user";
+import { getCurrentUserFollowFiltered, getCurrentUserFollowFilteredLives, getCurrentUserFollowFilteredVideos } from "@helpers/user";
 import { getWeek } from "@helpers/week";
 
 import { VideoApiModel, VideoModel } from "@components/Video";
@@ -15,8 +15,8 @@ export const getVideosByWeek = selector({
     key: "getVideosByWeek",
     get: async({ get }) => {
         const timezone = get(getSettings).timezone;
-        const users    = get(getCurrentUserFollow);
-        const videos   = get(getCurrentUserFollowVideos);
+        const users    = get(getCurrentUserFollowFiltered);
+        const videos   = get(getCurrentUserFollowFilteredVideos);
         const week     = get(getWeek);
 
         const startOfWeek = week.startOf("week");
@@ -34,7 +34,7 @@ export const getVideosByWeek = selector({
         const currentDate = DateTime.now();
 
         if (startOfWeek < currentDate && currentDate < endOfWeek) {
-            const lives = get(getCurrentUserFollowLives);
+            const lives = get(getCurrentUserFollowFilteredLives);
 
             lives.map((live) => {
                 const user = users.find(user => user.id === live.user_id);
@@ -80,6 +80,7 @@ export const getVideosByDay = selector({
 
                 mutableVideo = {
                     ...mutableVideo,
+                    copy             : true,
                     start_in_seconds : mutableVideo.start_in_seconds - diff,
                     end_in_seconds   : mutableVideo.end_in_seconds   - diff,
                 }

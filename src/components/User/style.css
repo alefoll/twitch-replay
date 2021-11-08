@@ -3,6 +3,11 @@
     padding: 4px;
     display: block;
     position: relative;
+    cursor: pointer;
+}
+
+.user__hide {
+    opacity: 0.2;
 }
 
 .user img {

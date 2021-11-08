@@ -7,7 +7,7 @@ import { UserProps } from "@components/User";
 import { Video, VideoModel } from "@components/Video";
 
 import { getSettings } from "@helpers/settings";
-import { getCurrentUserFollow } from "@helpers/user";
+import { getCurrentUserFollowFiltered } from "@helpers/user";
 import { getVideosByDay } from "@helpers/video";
 import { getWeek } from "@helpers/week";
 
@@ -19,7 +19,7 @@ export const Calendar = () => {
     const settings = useRecoilValue(getSettings)
     const week     = useRecoilValue(getWeek);
 
-    const loadableUsers       = useRecoilValueLoadable(getCurrentUserFollow);
+    const loadableUsers       = useRecoilValueLoadable(getCurrentUserFollowFiltered);
     const loadableVideosByDay = useRecoilValueLoadable(getVideosByDay);
 
     const startOfWeek = week.startOf("week");

@@ -33,24 +33,47 @@ export interface UserProps extends UserModel {
     isLive?: boolean;
 }
 
-export const User = ({ user }: { user: UserProps }) => {
+export const User = ({
+    hide,
+    onClick,
+    user,
+}: {
+    hide    ?: boolean,
+    onClick ?: (user: UserProps) => void,
+    user     : UserProps,
+}) => {
     const {
-        id,
-        isLive,
         color,
         display_name,
+        id,
+        isLive,
         login,
         profile_image_url,
     } = user;
 
     const style: React.CSSProperties = {
-        borderColor: color
+        borderColor: color,
     }
 
-    return (
-        <a className="user" href={ `https://www.twitch.tv/${ login }` } target="_blank">
-            <img key={ id } style={ style } src={ profile_image_url } alt={ display_name }/>
-            { isLive && <span className="user--live" /> }
-        </a>
-    )
+    if (onClick) {
+        const className = ["user"];
+
+        if (hide) {
+            className.push("user__hide");
+        }
+
+        return (
+            <div className={ className.join(" ") } onClick={ () => onClick(user) }>
+                <img key={ id } style={ style } src={ profile_image_url } alt={ display_name }/>
+                { isLive && <span className="user--live" /> }
+            </div>
+        )
+    } else {
+        return (
+            <a className="user" href={ `https://www.twitch.tv/${ login }` } target="_blank">
+                <img key={ id } style={ style } src={ profile_image_url } alt={ display_name }/>
+                { isLive && <span className="user--live" /> }
+            </a>
+        )
+    }
 }
