@@ -36,6 +36,10 @@ const SidebarContent = () => {
 
     return (
         <div className="sidebar--userlist">
+            <div className="sidebar--unfilter" onClick={ () => setFilteredUsers([]) } style={{ opacity: filteredUsers.length > 0 ? 1 : 0 }}>
+                <svg version="1.1" viewBox="0 0 100 100" x="0px" y="0px"><rect x="20" y="48" width="60" height="4" rx="2" /></svg>
+            </div>
+
             { users.map(user => <User key={ user.id } user={ user } onClick={ filterUser } hide={ filteredUsers.length > 0 && !filteredUsers.includes(user) } />) }
         </div>
     )

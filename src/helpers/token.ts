@@ -3,8 +3,8 @@ import { atom, selector } from "recoil";
 const TOKENKEY = "twitch-token";
 
 const tokenAtom = atom({
-  key: "tokenAtom",
-  default: window.localStorage.getItem(TOKENKEY) || "",
+    key: "tokenAtom",
+    default: window.localStorage.getItem(TOKENKEY) || "",
 });
 
 export const getToken = selector<string>({

@@ -1,5 +1,6 @@
 import React from "react";
 import { useRecoilState } from "recoil";
+import { useTranslation } from "react-i18next";
 
 import { Settings } from "@components/Settings";
 
@@ -8,6 +9,8 @@ import { getWeek } from "@helpers/week";
 import "./style.css";
 
 export const Header = () => {
+    const { t } = useTranslation();
+
     const [week, setWeek] = useRecoilState(getWeek);
 
     const previousWeek = () => {
@@ -24,7 +27,7 @@ export const Header = () => {
 
     return (
         <div className="header">
-            <h1 className="header--title">Calendrier des VODs</h1>
+            <h1 className="header--title">{ t("header.title") }</h1>
 
             <div className="spacer"></div>
 
@@ -42,7 +45,7 @@ export const Header = () => {
                 </button>
             </div>
 
-            {/* <Settings /> */}
+            <Settings />
         </div>
     );
 }

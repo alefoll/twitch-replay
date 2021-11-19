@@ -1,16 +1,19 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { CLIENTID } from "@helpers/api";
 
 import "./style.css";
 
 export const Login = () => {
+    const { t } = useTranslation();
+
     return (
         <div className="login">
             <div className="login--container">
-                <div className="login--container__title"><img className="login--container__logo" src="./assets/TwitchGlitchPurple.svg" alt="Twitch"/>Se connecter avec Twitch</div>
+                <div className="login--container__title"><img className="login--container__logo" src="./assets/TwitchGlitchPurple.svg" alt="Twitch"/>{ t("login.title") }</div>
 
-                <button onClick={ getToken }>Se connecter</button><br/>
+                <button onClick={ getToken }>{ t("login.action") }</button><br/>
             </div>
         </div>
     )

@@ -1,7 +1,6 @@
 import { atom, selector, waitForAny } from "recoil";
 
 import { api } from "@helpers/api";
-import { getSettings } from "@helpers/settings";
 import { getStreams } from "@helpers/stream";
 import { getToken } from "@helpers/token";
 import { getVideoByUserID } from "@helpers/video";
@@ -102,11 +101,10 @@ export const getCurrentUserFollowFilteredVideos = selector({
 export const getCurrentUserFollowLives = selector({
     key: "getCurrentUserFollowLives",
     get: async ({ get }) => {
-        const settings = get(getSettings);
-        const token    = get(getToken);
-        const users    = get(getCurrentUserFollow);
+        const token = get(getToken);
+        const users = get(getCurrentUserFollow);
 
-        const live = await getStreams(token, users.map(user => user.id), settings.timezone);
+        const live = await getStreams(token, users.map(user => user.id));
 
         return live;
     }

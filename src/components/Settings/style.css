@@ -11,3 +11,42 @@
 .settings--button:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
+
+.settings--backdrop,
+.settings--modal {
+    position: absolute;
+    z-index: 9000;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.settings--backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.settings--modal {
+    z-index: 9001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings--modal__title {
+    margin-top: 0;
+}
+
+.settings--modal__content {
+    display: flex;
+    flex-direction: column;
+    background-color: #18181b;
+    padding: 30px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 6px 16px 0px, rgba(0, 0, 0, 0.4) 0px 0px 4px 0px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.settings--modal__close {
+    margin-top: 16px;
+}

@@ -1,0 +1,22 @@
+{
+    "translation": {
+        "header": {
+            "title": "Calendrier des VODs"
+        },
+        "login": {
+            "title": "Se connecter avec Twitch",
+            "action": "Se connecter"
+        },
+        "nofollow": {
+            "title": "Le calendrier est vide",
+            "content": "Oh oh, tu ne suis aucune chaîne",
+            "action": "Aller suivre des chaînes"
+        },
+        "settings": {
+            "title": "Paramètres",
+            "language": "Langage :",
+            "timezone": "Fuseau horaire :",
+            "close": "Fermer"
+        }
+    }
+}

@@ -14,16 +14,15 @@ const SECONDS_IN_DAY = 86400;
 export const getVideosByWeek = selector({
     key: "getVideosByWeek",
     get: async({ get }) => {
-        const timezone = get(getSettings).timezone;
-        const users    = get(getCurrentUserFollowFiltered);
-        const videos   = get(getCurrentUserFollowFilteredVideos);
-        const week     = get(getWeek);
+        const users  = get(getCurrentUserFollowFiltered);
+        const videos = get(getCurrentUserFollowFilteredVideos);
+        const week   = get(getWeek);
 
         const startOfWeek = week.startOf("week");
         const endOfWeek   = week.endOf("week");
 
         const filter = videos.filter((video) => {
-            const startDate = DateTime.fromISO(video.created_at).setZone(timezone);
+            const startDate = DateTime.fromISO(video.created_at).setZone("utc");
             const endDate   = startDate.plus({ seconds: video.duration_in_seconds });
 
             return (startDate > startOfWeek && startDate < endOfWeek)
@@ -31,7 +30,7 @@ export const getVideosByWeek = selector({
                 || (startDate < startOfWeek && endDate   > endOfWeek);
         });
 
-        const currentDate = DateTime.now();
+        const currentDate = DateTime.local().setZone("utc");
 
         if (startOfWeek < currentDate && currentDate < endOfWeek) {
             const lives = get(getCurrentUserFollowFilteredLives);
@@ -58,20 +57,27 @@ export const getVideosByWeek = selector({
 export const getVideosByDay = selector({
     key: "getVideosByDay",
     get: ({ get }) => {
-        const timezone = get(getSettings).timezone;
+        const settings = get(getSettings);
         const videos   = get(getVideosByWeek);
         const week     = get(getWeek);
+
+        const timezoneOffset = DateTime.local().setZone(settings.timezone).offset * 60;
 
         const startOfWeek = week.startOf("week");
 
         const result: VideoModel[][] = [...Array(7).keys()].map(_ => []);
 
         videos.map((video) => {
-            const startDate = DateTime.fromISO(video.created_at).setZone(timezone);
+            let mutableVideo: VideoModel = {
+                ...video,
+                start_in_seconds : video.start_in_seconds + timezoneOffset,
+                end_in_seconds   : video.end_in_seconds   + timezoneOffset,
+            };
 
+            const startDate = DateTime.fromISO(mutableVideo.created_at).setZone("utc");
+
+            // weekday start at 1
             let weekday = startDate.weekday - 1;
-
-            let mutableVideo: VideoModel = { ...video };
 
             if (startDate < startOfWeek) {
                 weekday = 0;
@@ -80,18 +86,18 @@ export const getVideosByDay = selector({
 
                 mutableVideo = {
                     ...mutableVideo,
-                    copy             : true,
                     start_in_seconds : mutableVideo.start_in_seconds - diff,
                     end_in_seconds   : mutableVideo.end_in_seconds   - diff,
                 }
             }
 
-            result[weekday].push({ ...mutableVideo });
+            if (mutableVideo.start_in_seconds < SECONDS_IN_DAY) {
+                result[weekday].push({ ...mutableVideo });
+            }
 
             while (mutableVideo.end_in_seconds > SECONDS_IN_DAY) {
                 mutableVideo = {
                     ...mutableVideo,
-                    copy             : true,
                     start_in_seconds : mutableVideo.start_in_seconds - SECONDS_IN_DAY,
                     end_in_seconds   : mutableVideo.end_in_seconds   - SECONDS_IN_DAY,
                 }
@@ -110,10 +116,10 @@ export const getVideosByDay = selector({
 
 export const getVideoByUserID = selectorFamily({
     key: "getVideoByUserID",
-    get: (userID: string) => async ({ get }) => (await getVideos(get(getToken), userID, get(getSettings).timezone)).videos,
+    get: (userID: string) => async ({ get }) => (await getVideos(get(getToken), userID)).videos,
 });
 
-export const getVideos = async (token: string, userID: string, timezone: string, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
+export const getVideos = async (token: string, userID: string, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
     const request = await api(token, `videos?user_id=${ userID }&after=${ pagination }&first=100&type=archive`);
 
     let data: VideoApiModel[] = request.data;
@@ -121,7 +127,7 @@ export const getVideos = async (token: string, userID: string, timezone: string,
     data = data.filter((video) => video.thumbnail_url !== "");
 
     const videos: VideoModel[] = data.map((video) => {
-        const start_in_seconds    = dateToSeconds(video.created_at, timezone);
+        const start_in_seconds    = dateToSeconds(video.created_at);
         const duration_in_seconds = durationToSeconds(video.duration!);
         const end_in_seconds      = start_in_seconds + duration_in_seconds;
 
@@ -163,9 +169,9 @@ export const durationToSeconds = (duration: string): number => {
     }
 }
 
-export const durationToNow = (started_at: string, timezone: string): number => {
-    const start = DateTime.fromISO(started_at).setZone(timezone);
-    const now   = DateTime.now().setZone(timezone);
+export const durationToNow = (started_at: string): number => {
+    const start = DateTime.fromISO(started_at).setZone("utc");
+    const now   = DateTime.local().setZone("utc");
 
     const { seconds } = now.diff(start, "seconds");
 
@@ -176,8 +182,8 @@ export const durationToNow = (started_at: string, timezone: string): number => {
     }
 }
 
-export const dateToSeconds = (created: string, timezone: string) => {
-    const date = DateTime.fromISO(created).setZone(timezone);
+export const dateToSeconds = (created: string) => {
+    const date = DateTime.fromISO(created).setZone("utc");
 
     const duration = Duration.fromObject({
         hours   : date.hour,

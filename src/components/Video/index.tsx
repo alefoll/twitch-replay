@@ -32,7 +32,6 @@ export interface VideoModel extends VideoApiModel {
     duration_in_seconds: number;
     end_in_seconds: number;
     lineIndex?: number;
-    copy?: boolean;
 }
 
 export const Video = ({
@@ -45,9 +44,9 @@ export const Video = ({
     video: VideoModel,
 }) => {
     const {
-        copy,
         duration,
         lineIndex,
+        start_in_seconds,
         title,
         thumbnail_url,
         type,
@@ -62,8 +61,8 @@ export const Video = ({
         className.push("video--first");
     }
 
-    if (copy) {
-        className.push("video--copy");
+    if (start_in_seconds < 0) {
+        className.push("video--before");
     }
 
     if (isLive) {

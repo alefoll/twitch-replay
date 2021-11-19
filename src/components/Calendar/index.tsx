@@ -65,8 +65,8 @@ export const Calendar = () => {
                                     const style: { style: React.CSSProperties } = {
                                         style : {
                                             left     : ((video.start_in_seconds / SECONDS_IN_DAY) * 100) + "%",
-                                            width    : (((video.end_in_seconds - video.start_in_seconds) / SECONDS_IN_DAY) * 100) + "%",
-                                            minWidth : (((video.end_in_seconds - video.start_in_seconds) / SECONDS_IN_DAY) * 100) + "%",
+                                            width    : ((video.duration_in_seconds / SECONDS_IN_DAY) * 100) + "%",
+                                            minWidth : ((video.duration_in_seconds / SECONDS_IN_DAY) * 100) + "%",
                                             top      : ((vignetteHeight * (video.lineIndex || 0)) + vignetteMarginTopBottom) + "px"
                                         }
                                     }

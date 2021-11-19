@@ -1,6 +1,8 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 
+import "@i18n/config";
+
 import { Calendar } from "@components/Calendar";
 import { Header } from "@components/Header";
 import { Login } from "@components/Login";

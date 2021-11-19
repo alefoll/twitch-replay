@@ -10,14 +10,31 @@
     animation: colorTransition 5s alternate infinite;
 }
 
+.sidebar--unfilter svg {
+    fill: #ffffffbb;
+}
+
 .sidebar--twitch-logo {
     width: 42px;
-    margin: 11px 11px 32px;
+    margin: 11px;
     flex-shrink: 0;
 }
 
+.sidebar--unfilter {
+    height: 48px;
+    width: 48px;
+    margin: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 20%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #ffffffbb;
+}
+
 .sidebar--userlist {
-    /* padding: 0 4px; */
     flex: 1 1 auto;
     overflow: auto;
 }

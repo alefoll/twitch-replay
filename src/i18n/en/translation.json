@@ -1,0 +1,22 @@
+{
+    "translation": {
+        "header": {
+            "title": "Replay Calendar"
+        },
+        "login": {
+            "title": "Login with Twitch",
+            "action": "Login"
+        },
+        "nofollow": {
+            "title": "Calendar is empty",
+            "content": "Oh no, you don't follow any streamer",
+            "action": "Start following on twitch.tv"
+        },
+        "settings": {
+            "title": "Settings",
+            "language": "Language:",
+            "timezone": "Timezone:",
+            "close": "Close"
+        }
+    }
+}
