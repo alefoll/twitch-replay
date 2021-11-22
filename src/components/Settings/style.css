@@ -47,6 +47,10 @@
     overflow: hidden;
 }
 
+.settings--modal__content form select {
+    width: 100%;
+}
+
 .settings--modal__close {
     margin-top: 16px;
 }

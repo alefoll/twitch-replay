@@ -2,6 +2,7 @@ import { atom, selector } from "recoil";
 import { DateTime } from "luxon";
 
 interface Settings {
+    is24Hour: boolean,
     locale: string,
     timezone: string,
 }
@@ -10,28 +11,31 @@ export const SETTINGSKEY = "settings";
 
 const settingsAtom = atom({
     key: "settingsAtom",
-    default: window.localStorage.getItem(SETTINGSKEY),
+    default: {
+        is24Hour : true,
+        locale   : "",
+        timezone : DateTime.local().zoneName,
+    },
 });
 
 export const getSettings = selector<Settings>({
     key: "getSettings",
     get: ({ get }) => {
-        const settings = get(settingsAtom);
+        const defaultSettings = get(settingsAtom);
+        const settings = window.localStorage.getItem(SETTINGSKEY);
 
         if (!settings) {
-            return {
-                locale   : "",
-                timezone : DateTime.local().zoneName,
-            }
+            return defaultSettings;
         }
 
-        return JSON.parse(settings);
+        return {
+            ...defaultSettings,
+            ...JSON.parse(settings),
+        }
     },
     set: ({ set }, newValue) => {
-        const value = JSON.stringify(newValue);
+        window.localStorage.setItem(SETTINGSKEY, JSON.stringify(newValue));
 
-        window.localStorage.setItem(SETTINGSKEY, value);
-
-        set(settingsAtom, value);
+        set(settingsAtom, newValue);
     }
 });

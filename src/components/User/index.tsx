@@ -1,6 +1,9 @@
 import React from "react";
+import { useRecoilValue } from "recoil";
 
 import { VideoModel } from "@components/Video";
+
+import { getCurrentUserFollowLives } from "@helpers/user";
 
 import "./style.css";
 
@@ -30,7 +33,6 @@ export interface UserModel {
 
 export interface UserProps extends UserModel {
     color: string;
-    isLive?: boolean;
 }
 
 export const User = ({
@@ -46,10 +48,13 @@ export const User = ({
         color,
         display_name,
         id,
-        isLive,
         login,
         profile_image_url,
     } = user;
+
+    const lives = useRecoilValue(getCurrentUserFollowLives);
+
+    const isLive = lives.find((live) => live.user_id === id);
 
     const style: React.CSSProperties = {
         borderColor: color,

@@ -39,14 +39,22 @@ export const Calendar = () => {
     }
 
     if (loadableVideosByDay.state === "hasError") {
-        console.log(loadableVideosByDay);
+        console.error(loadableVideosByDay);
     }
+
+    const timeline = [...Array(25).keys()].map((hour) => {
+        if (settings.is24Hour) {
+            return `${ hour%24 }:00`.padStart(5, "0");
+        }
+
+        return `${ hour%12 }${ hour < 12 ? "am" : "pm" }`.padStart(4, "0");
+    });
 
     return (
         <div className="calendar">
             <div className="calendar--week">
                 <div className="calendar--time">
-                    { [...Array(25).keys()].map(hour => <div key={ hour }>{ (hour%24 + ":00").padStart(5, "0") }</div>) }
+                    { timeline.map((hour, index) => <div key={ index }>{ hour }</div>) }
                 </div>
 
                 { videosByDay.map((videos, index) => {
@@ -58,7 +66,7 @@ export const Calendar = () => {
 
                             <div className="calendar--line__content">
                                 <div className="calendar--line__time">
-                                    { [...Array(25).keys()].map(hour => <div key={ hour }></div>) }
+                                    { timeline.map((_, index) => <div key={ index }></div>) }
                                 </div>
 
                                 { videosWithLineInfo.map(video => {

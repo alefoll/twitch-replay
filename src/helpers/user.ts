@@ -71,9 +71,9 @@ export const getCurrentUserFollowFiltered = selector<UserProps[]>({
 
         if (filteredUsers.length === 0) {
             return users;
-        } else {
-            return users.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.id));
         }
+
+        return users.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.id));
     }
 });
 
@@ -113,9 +113,15 @@ export const getCurrentUserFollowLives = selector({
 export const getCurrentUserFollowFilteredLives = selector({
     key: "getCurrentUserFollowFilteredLives",
     get: ({ get }) => {
+        const lives = get(getCurrentUserFollowLives);
+
         const filteredUsers = get(getFilteredUsers);
 
-        return get(getCurrentUserFollowLives).filter(live => filteredUsers.find(user => user.id === live.user_id));
+        if (filteredUsers.length === 0) {
+            return lives;
+        }
+
+        return lives.filter(live => filteredUsers.find(user => user.id === live.user_id));
     }
 });
 

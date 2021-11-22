@@ -15,6 +15,7 @@
         "settings": {
             "title": "Paramètres",
             "language": "Langage :",
+            "timeformat": "Format horaire :",
             "timezone": "Fuseau horaire :",
             "close": "Fermer"
         }

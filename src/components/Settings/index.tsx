@@ -64,6 +64,13 @@ const SettingsModal = ({
         return previous;
     }, []);
 
+    const updateClock = (is24Hour: boolean) => {
+        setSettings({
+            ...settings,
+            is24Hour,
+        });
+    }
+
     const updateLocale = (locale: string) => {
         i18n.changeLanguage(locale);
 
@@ -87,12 +94,21 @@ const SettingsModal = ({
 
                 <form>
                     { t("settings.language") }<br />
-                    <select name="timezone" onChange={ e => updateLocale(e.target.value) } defaultValue={ settings.locale }>
+                    <select name="language" onChange={ e => updateLocale(e.target.value) } defaultValue={ settings.locale }>
                         { locales.map((locale) => {
                             return (
                                 <option key={ locale.value } value={ locale.value }>{ locale.name }</option>
                             )
                         }) }
+                    </select>
+
+                    <br />
+                    <br />
+
+                    { t("settings.timeformat") }<br />
+                    <select name="timeformat" onChange={ e => updateClock(e.target.value === "13") } defaultValue={ settings.is24Hour ? "13" : "1pm" }>
+                        <option value={ "13" }>13:00</option>
+                        <option value={ "1pm" }>1:00pm</option>
                     </select>
 
                     <br />
