@@ -32,6 +32,7 @@
 .header--weekpicker p {
     width: 124px;
     text-align: center;
+    font-weight: bold;
 }
 
 .header--settings {

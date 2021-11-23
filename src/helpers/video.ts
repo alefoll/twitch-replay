@@ -14,19 +14,22 @@ const SECONDS_IN_DAY = 86400;
 export const getVideosByWeek = selector({
     key: "getVideosByWeek",
     get: async({ get }) => {
-        const users  = get(getCurrentUserFollowFiltered);
-        const videos = get(getCurrentUserFollowFilteredVideos);
-        const week   = get(getWeek);
+        const settings = get(getSettings);
+        const users    = get(getCurrentUserFollowFiltered);
+        const videos   = get(getCurrentUserFollowFilteredVideos);
+        const week     = get(getWeek);
 
         const startOfWeek = week.startOf("week");
         const endOfWeek   = week.endOf("week");
 
+        const timezoneOffset = DateTime.local().setZone(settings.timezone).offset * 60;
+
         const filter = videos.filter((video) => {
-            const startDate = DateTime.fromISO(video.created_at).setZone("utc");
+            const startDate = DateTime.fromISO(video.created_at).setZone("utc").plus({ seconds: timezoneOffset });
             const endDate   = startDate.plus({ seconds: video.duration_in_seconds });
 
-            return (startDate > startOfWeek && startDate < endOfWeek)
-                || (endDate   > startOfWeek && endDate   < endOfWeek)
+            return (startOfWeek < startDate && startDate < endOfWeek)
+                || (startOfWeek < endDate   && endDate   < endOfWeek)
                 || (startDate < startOfWeek && endDate   > endOfWeek);
         });
 
@@ -74,7 +77,7 @@ export const getVideosByDay = selector({
                 end_in_seconds   : video.end_in_seconds   + timezoneOffset,
             };
 
-            const startDate = DateTime.fromISO(mutableVideo.created_at).setZone("utc");
+            const startDate = DateTime.fromISO(mutableVideo.created_at).setZone("utc").plus({ seconds: timezoneOffset });
 
             // weekday start at 1
             let weekday = startDate.weekday - 1;

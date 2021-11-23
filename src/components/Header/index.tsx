@@ -1,5 +1,6 @@
 import React from "react";
 import { useRecoilState } from "recoil";
+import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 
 import { Settings } from "@components/Settings";
@@ -25,6 +26,8 @@ export const Header = () => {
         );
     }
 
+    const currentWeek = DateTime.local().setZone("utc").startOf("week");
+
     return (
         <div className="header">
             <h1 className="header--title">{ t("header.title") }</h1>
@@ -40,7 +43,7 @@ export const Header = () => {
                     { week.startOf("week").toFormat("dd/MM") } – { week.endOf("week").toFormat("dd/MM") }
                 </p>
 
-                <button onClick={ nextWeek }>
+                <button onClick={ nextWeek } disabled={ currentWeek < week }>
                     <svg width="16px" height="16px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path d="M6.5 5.5L11 10l-4.5 4.5L8 16l6-6-6-6-1.5 1.5z"></path></g></svg>
                 </button>
             </div>
