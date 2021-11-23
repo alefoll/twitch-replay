@@ -54,6 +54,10 @@ button {
     font-weight: 600;
 }
 
+button:disabled {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
 a {
     text-decoration: none;
 }
@@ -462,6 +466,7 @@ a {
 .header--weekpicker p {
     width: 124px;
     text-align: center;
+    font-weight: bold;
 }
 
 .header--settings {
