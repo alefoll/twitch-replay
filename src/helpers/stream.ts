@@ -1,31 +1,39 @@
-import { api } from "@helpers/api";
+import { selectorFamily } from "recoil";
 
+import { api } from "@helpers/api";
 import { dateToSeconds, durationToNow } from "@helpers/video";
 
 import { VideoApiModel, VideoModel } from "@components/Video";
 
-export const getStreams = async (token: string, userIDs: string[], pagination: string = ""): Promise<VideoModel[]> => {
-    const request = await api(token, `streams?user_id=${ userIDs.slice(0, 100).join("&user_id=") }&after=${ pagination }`);
+export const getStreams = selectorFamily<VideoModel[], string[]>({
+    key: "getStreams",
+    get: ids => async({ get }) => {
+        let streams: VideoApiModel[] = [];
 
-    const streams: VideoApiModel[] = request.data;
+        let pagination: string = "";
 
-    if (request.pagination.cursor) {
-        const recursive = await getStreams(token, userIDs.slice(100, 200), request.pagination.cursor);
+        do {
+            const request = get(api({
+                path: `streams?user_id=${ ids.slice(0, 100).join("&user_id=") }&after=${ pagination }`
+            }));
 
-        streams.push(...recursive);
+            streams = [...streams, ...request.data];
+
+            pagination = request.pagination.cursor || "";
+        } while (pagination !== "");
+
+        return streams.map((stream) => {
+            const start_in_seconds    = dateToSeconds(stream.started_at!);
+            const duration_in_seconds = durationToNow(stream.started_at!);
+            const end_in_seconds      = start_in_seconds + duration_in_seconds;
+
+            return {
+                ...stream,
+                created_at: stream.started_at!,
+                start_in_seconds,
+                duration_in_seconds,
+                end_in_seconds,
+            };
+        });
     }
-
-    return streams.map((stream) => {
-        const start_in_seconds    = dateToSeconds(stream.started_at!);
-        const duration_in_seconds = durationToNow(stream.started_at!);
-        const end_in_seconds      = start_in_seconds + duration_in_seconds;
-
-        return {
-            ...stream,
-            created_at: stream.started_at!,
-            start_in_seconds,
-            duration_in_seconds,
-            end_in_seconds,
-        };
-    });
-}
+});

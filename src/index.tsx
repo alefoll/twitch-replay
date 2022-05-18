@@ -2,7 +2,7 @@ import "./index.html";
 import "./style.css";
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { RecoilRoot } from "recoil";
 
 import { App } from "@components/App";
@@ -13,8 +13,12 @@ import "../assets/TwitchExtrudedWordmarkPurple.svg";
 import "../assets/TwitchGlitchBlackOps.svg";
 import "../assets/TwitchGlitchPurple.svg";
 
-ReactDOM.render((
-    <RecoilRoot>
-        <App />
-    </RecoilRoot>
-), document.querySelector("#app"));
+const container = document.querySelector("#app");
+
+if (container) {
+    createRoot(container).render(
+        <RecoilRoot>
+            <App />
+        </RecoilRoot>
+    );
+}

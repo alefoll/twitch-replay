@@ -3,7 +3,6 @@ import { DateTime, Duration } from "luxon";
 
 import { api } from "@helpers/api";
 import { getSettings } from "@helpers/settings";
-import { getToken } from "@helpers/token";
 import { getCurrentUserFollowFiltered, getCurrentUserFollowFilteredLives, getCurrentUserFollowFilteredVideos } from "@helpers/user";
 import { getWeek } from "@helpers/week";
 
@@ -119,34 +118,42 @@ export const getVideosByDay = selector({
 
 export const getVideoByUserID = selectorFamily({
     key: "getVideoByUserID",
-    get: (userID: string) => async ({ get }) => (await getVideos(get(getToken), userID)).videos,
+    get: (userID: string) => async ({ get }) => get(getVideos(userID)),
 });
 
-export const getVideos = async (token: string, userID: string, pagination: string = ""): Promise<{ videos: VideoModel[], pagination: string }> => {
-    const request = await api(token, `videos?user_id=${ userID }&after=${ pagination }&first=100&type=archive`);
+export const getVideos = selectorFamily<VideoModel[], string>({
+    key: "getVideos",
+    get: id => async({ get }) => {
+        let videos: VideoApiModel[] = [];
 
-    let data: VideoApiModel[] = request.data;
+        let pagination: string = "";
 
-    data = data.filter((video) => video.thumbnail_url !== "");
+        do {
+            const request = get(api({
+                path: `videos?user_id=${ id }&after=${ pagination }&first=100&type=archive`
+            }));
 
-    const videos: VideoModel[] = data.map((video) => {
-        const start_in_seconds    = dateToSeconds(video.created_at);
-        const duration_in_seconds = durationToSeconds(video.duration!);
-        const end_in_seconds      = start_in_seconds + duration_in_seconds;
+            const data: VideoApiModel[] = request.data.filter((video: VideoApiModel) => video.thumbnail_url !== "");
 
-        return {
-            ...video,
-            start_in_seconds,
-            duration_in_seconds,
-            end_in_seconds,
-        }
-    });
+            videos = [...videos, ...data];
 
-    return {
-        videos,
-        pagination: request.pagination,
-    };
-}
+            // pagination = request.pagination.cursor || "";
+        } while (pagination !== "");
+
+        return videos.map((video) => {
+            const start_in_seconds    = dateToSeconds(video.created_at);
+            const duration_in_seconds = durationToSeconds(video.duration!);
+            const end_in_seconds      = start_in_seconds + duration_in_seconds;
+
+            return {
+                ...video,
+                start_in_seconds,
+                duration_in_seconds,
+                end_in_seconds,
+            }
+        });
+    }
+});
 
 export const durationToSeconds = (duration: string): number => {
     const parser = /(?:(?:(\d*)h)?(\d*)m)?(\d*)s/.exec(duration);

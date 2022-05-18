@@ -1,89 +1,54 @@
-import { atom, selector, waitForAny } from "recoil";
+import { atom, selector, selectorFamily, waitForAny } from "recoil";
 
 import { api } from "@helpers/api";
 import { getStreams } from "@helpers/stream";
-import { getToken } from "@helpers/token";
 import { getVideoByUserID } from "@helpers/video";
 
 import { UserFollow, UserModel, UserProps } from "@components/User";
 import { VideoModel } from "@components/Video";
 
-const usersInitialState: UserProps[] = [];
-
-export const usersState = atom({
-    key: "usersState",
-    default: usersInitialState,
-});
-
-export const getCurrentUser = selector({
+export const getCurrentUser = selector<UserModel>({
     key: "getCurrentUser",
-    get: async ({ get }) => {
-        return (await getUsers(get(getToken)))[0];
-    }
+    get: async ({ get }) => get(getUsers(undefined))[0],
 });
 
 export const getCurrentUserFollow = selector<UserProps[]>({
     key: "getCurrentUserFollow",
     get: async ({ get }) => {
-        const follows = await getUserChannels(get(getToken), get(getCurrentUser));
+        const me = get(getCurrentUser);
 
-        const users = await getUsers(get(getToken), follows.map(_ => _.to_id));
+        const follows = get(getUserFollows(me.id));
 
-        users.sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
+        const userFollows = get(getUsers(follows.map(_ => _.to_id)));
 
-        const defaultColors = [
-            "#9147ff",
-            "#fa1fd1",
-            "#8205b5",
-            "#00c7b0",
-            "#1f69ff",
-            "#fab5ff",
-            "#fa2929",
-            "#57bee6",
-            "#bf0078",
-            "#fc6675",
-            "#40145e",
-            "#ff6905",
-            "#bfabff",
-            "#ffc95e",
-            "#0014a6",
-        ]
+        const userFollowsSorted = [...userFollows].sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
 
-        const colors: { login: string, color: string }[] = require("../../assets/colors.json");
-
-        return users.map((user) => {
-            const userProps: UserProps = {
-                ...user,
-                color: colors.find((_) => _.login === user.login)?.color ?? defaultColors[Math.floor(defaultColors.length * Math.random())],
-            }
-
-            return userProps;
-        });
+        return userFollowsSorted;
     }
 });
 
 export const getCurrentUserFollowFiltered = selector<UserProps[]>({
     key: "getCurrentUserFollowFiltered",
     get: ({ get }) => {
-        const users = get(getCurrentUserFollow);
+        const userFollows = get(getCurrentUserFollow);
 
         const filteredUsers = get(getFilteredUsers);
 
         if (filteredUsers.length === 0) {
-            return users;
+            return userFollows;
         }
 
-        return users.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.id));
+        return userFollows.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.id));
     }
 });
 
 export const getCurrentUserFollowFilteredVideos = selector({
     key: "getCurrentUserFollowFilteredVideos",
     get: async ({ get }) => {
-        const users = get(getCurrentUserFollowFiltered);
+        const userFollows = get(getCurrentUserFollowFiltered);
 
         const videos = get(waitForAny(
-            users.map(user => getVideoByUserID(user.id))
+            userFollows.map(user => getVideoByUserID(user.id))
         ));
 
         const result = videos.reduce((previous, current) => {
@@ -101,10 +66,9 @@ export const getCurrentUserFollowFilteredVideos = selector({
 export const getCurrentUserFollowLives = selector({
     key: "getCurrentUserFollowLives",
     get: async ({ get }) => {
-        const token = get(getToken);
-        const users = get(getCurrentUserFollow);
+        const userFollows = get(getCurrentUserFollow);
 
-        const live = await getStreams(token, users.map(user => user.id));
+        const live = get(getStreams(userFollows.map(user => user.id)));
 
         return live;
     }
@@ -130,29 +94,66 @@ export const getFilteredUsers = atom<UserProps[]>({
     default: [],
 });
 
-const getUserChannels = async (token: string, user: UserModel, pagination: string = ""): Promise<UserFollow[]> => {
-    const request = await api(token, `users/follows?from_id=${ user.id }&after=${ pagination }`);
+export const getUsers = selectorFamily<UserProps[], string[] | undefined>({
+    key: "getUsers",
+    get: ids => async({ get }) => {
+        let query = "";
 
-    const result = request.data;
+        if (ids && ids.length) {
+            query = "?id=" + ids.slice(0, 100).join("&id="); // API limit 100
+        }
 
-    if (request.pagination.cursor) {
-        const recursive = await getUserChannels(token, user, request.pagination.cursor);
+        const request = get(api({
+            path: `users${ query }`,
+        }));
 
-        result.push(...recursive);
+        const users = request.data;
+
+        const defaultColors = [
+            "#9147ff",
+            "#fa1fd1",
+            "#8205b5",
+            "#00c7b0",
+            "#1f69ff",
+            "#fab5ff",
+            "#fa2929",
+            "#57bee6",
+            "#bf0078",
+            "#fc6675",
+            "#40145e",
+            "#ff6905",
+            "#bfabff",
+            "#ffc95e",
+            "#0014a6",
+        ]
+
+        return users.map((user: UserModel) => {
+            return {
+                ...user,
+                color: defaultColors[Math.floor(defaultColors.length * Math.random())],
+            }
+        });
+
     }
+});
 
-    return result;
-}
+export const getUserFollows = selectorFamily<UserFollow[], string>({
+    key: "getUserFollows",
+    get: id => async({ get }) => {
+        let follows: UserFollow[] = [];
 
-const getUsers = async (token: string, userIDs: string[] = []): Promise<UserModel[]> => {
-    let query = "";
+        let pagination: string = "";
 
+        do {
+            const request = get(api({
+                path: `users/follows?from_id=${ id }&first=100&after=${ pagination }`
+            }));
 
-    if (userIDs.length) {
-        query = "?id=" + userIDs.slice(0, 100).join("&id="); // API limit 100
+            follows = [...follows, ...request.data];
+
+            pagination = request.pagination.cursor || "";
+        } while (pagination !== "");
+
+        return follows;
     }
-
-    const request = await api(token, `users${ query }`);
-
-    return request.data;
-}
+});

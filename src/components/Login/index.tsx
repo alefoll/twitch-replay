@@ -20,5 +20,5 @@ export const Login = () => {
 }
 
 const getToken = () => {
-    window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${ CLIENTID }&redirect_uri=https://alefoll.github.io/twitch-replay/&response_type=token`);
+    window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${ CLIENTID }&redirect_uri=https://alefoll.github.io/twitch-replay/&response_type=token&scope=user%3Aread%3Abroadcast`);
 }
