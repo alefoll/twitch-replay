@@ -143,6 +143,10 @@ a {
     border-color: #ffffff !important;
 }
 
+.contrast .video--thumbnail__user .user img:hover {
+    border-color: #000000 !important;
+}
+
 .video--thumbnail__user .user--live {
     display: none;
 }
@@ -240,6 +244,11 @@ a {
     overflow: hidden;
     text-overflow: ellipsis;
     transition: all .2s;
+}
+
+.contrast .video--title {
+    color: #000000;
+    text-shadow: 0 0 1px #444444;
 }
 
 .video:hover .video--title {
