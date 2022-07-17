@@ -146,7 +146,7 @@ export const getUsers = selectorFamily<UserProps[], string[] | undefined>({
             return {
                 ...user,
                 color,
-                contrast: colord(color).isLight(),
+                contrast: colord(color).brightness() >= 0.7,
             }
         });
 
