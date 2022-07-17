@@ -1,4 +1,5 @@
 import { atom, selector, selectorFamily, waitForAny } from "recoil";
+import { colord } from "colord";
 
 import { api } from "@helpers/api";
 import { getStreams } from "@helpers/stream";
@@ -109,6 +110,18 @@ export const getUsers = selectorFamily<UserProps[], string[] | undefined>({
 
         const users = request.data;
 
+        const usersColor: Map<string, string>= new Map();
+
+        if (ids && ids.length) {
+            query = "?user_id=" + ids.slice(0, 100).join("&user_id="); // API limit 100
+
+            const colorsRequest = get(api({
+                path: `chat/color${ query }`,
+            }));
+
+            colorsRequest.data.map((data: { user_id: string, color: string }) => usersColor.set(data.user_id, data.color));
+        }
+
         const defaultColors = [
             "#9147ff",
             "#fa1fd1",
@@ -128,9 +141,12 @@ export const getUsers = selectorFamily<UserProps[], string[] | undefined>({
         ]
 
         return users.map((user: UserModel) => {
+            const color = usersColor.get(user.id) ?? defaultColors[Math.floor(defaultColors.length * Math.random())];
+
             return {
                 ...user,
-                color: defaultColors[Math.floor(defaultColors.length * Math.random())],
+                color,
+                contrast: colord(color).isLight(),
             }
         });
 

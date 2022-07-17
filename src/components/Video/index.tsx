@@ -77,6 +77,10 @@ export const Video = ({
         }
     }
 
+    if (user?.contrast) {
+        className.push("contrast");
+    }
+
     return (
         <a className={ className.join(" ") } style={ style } href={ url } target="_blank">
             <div className="video--thumbnail">

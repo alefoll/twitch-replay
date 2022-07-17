@@ -32,6 +32,10 @@
     border-color: #ffffff !important;
 }
 
+.contrast .video--thumbnail__user .user img:hover {
+    border-color: #000000 !important;
+}
+
 .video--thumbnail__user .user--live {
     display: none;
 }

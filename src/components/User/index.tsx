@@ -33,6 +33,7 @@ export interface UserModel {
 
 export interface UserProps extends UserModel {
     color: string;
+    contrast: boolean;
 }
 
 export const User = ({
