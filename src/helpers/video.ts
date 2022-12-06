@@ -145,13 +145,17 @@ export const getVideos = selectorFamily<VideoModel[], string>({
             const duration_in_seconds = durationToSeconds(video.duration!);
             const end_in_seconds      = start_in_seconds + duration_in_seconds;
 
+            if (video.thumbnail_url.includes("404_processing_")) {
+                return;
+            }
+
             return {
                 ...video,
                 start_in_seconds,
                 duration_in_seconds,
                 end_in_seconds,
             }
-        });
+        }).filter(item => item) as VideoModel[];
     }
 });
 
