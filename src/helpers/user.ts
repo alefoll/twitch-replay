@@ -20,7 +20,7 @@ export const getCurrentUserFollow = selector<UserProps[]>({
 
         const follows = get(getUserFollows(me.id));
 
-        const userFollows = get(getUsers(follows.map(_ => _.to_id)));
+        const userFollows = get(getUsers(follows.map(_ => _.broadcaster_id)));
 
         const userFollowsSorted = [...userFollows].sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
 
@@ -162,7 +162,7 @@ export const getUserFollows = selectorFamily<UserFollow[], string>({
 
         do {
             const request = get(api({
-                path: `users/follows?from_id=${ id }&first=100&after=${ pagination }`
+                path: `channels/followed?user_id=${ id }&first=100&after=${ pagination }`
             }));
 
             follows = [...follows, ...request.data];

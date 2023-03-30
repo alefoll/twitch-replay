@@ -95,6 +95,8 @@ export const getVideosByDay = selector({
 
             if (mutableVideo.start_in_seconds < SECONDS_IN_DAY) {
                 result[weekday].push({ ...mutableVideo });
+
+                weekday++;
             }
 
             while (mutableVideo.end_in_seconds > SECONDS_IN_DAY) {
@@ -104,11 +106,11 @@ export const getVideosByDay = selector({
                     end_in_seconds   : mutableVideo.end_in_seconds   - SECONDS_IN_DAY,
                 }
 
-                weekday++;
-
                 if (weekday < 7) {
                     result[weekday].push({ ...mutableVideo });
                 }
+
+                weekday++;
             }
         });
 

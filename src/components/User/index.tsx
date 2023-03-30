@@ -8,11 +8,10 @@ import { getCurrentUserFollowLives } from "@helpers/user";
 import "./style.css";
 
 export interface UserFollow {
+    broadcaster_id: string;
+    broadcaster_login: string;
+    broadcaster_name: string;
     followed_at: string;
-    from_id: string;
-    from_name: string;
-    to_id: string;
-    to_name: string;
 }
 
 export interface UserModel {

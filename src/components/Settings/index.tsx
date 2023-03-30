@@ -54,15 +54,7 @@ const SettingsModal = ({
         value: "fr",
     }];
 
-    const timezones = getTimeZones().reduce((previous: RawTimeZone[], current) => {
-        const result = previous.find((element) => element.alternativeName === current.alternativeName);
-
-        if (!result) {
-            previous.push(current);
-        }
-
-        return previous;
-    }, []);
+    const timezones = getTimeZones();
 
     const updateClock = (is24Hour: boolean) => {
         setSettings({
@@ -118,7 +110,7 @@ const SettingsModal = ({
                     <select name="timezone" onChange={ e => updateTimezone(e.target.value) } defaultValue={ settings.timezone }>
                         { timezones.map((timezone) => {
                             return (
-                                <option key={ timezone.name } value={ timezone.name }>({ timezone.rawFormat.split(" ")[0] }) { timezone.alternativeName }</option>
+                                <option key={ timezone.name } value={ timezone.name }>({ timezone.rawFormat.split(" ")[0] }) { timezone.mainCities[0] ?? timezone.name }</option>
                             )
                         }) }
                     </select>
