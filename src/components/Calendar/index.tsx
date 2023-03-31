@@ -1,13 +1,11 @@
-import React, { Suspense } from "react";
+import React, { Suspense, memo, useEffect, useState } from "react";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { Info } from "luxon";
 
 import { NoFollow } from "@components/NoFollow";
-import { UserProps } from "@components/User";
 import { Video, VideoModel } from "@components/Video";
 
 import { getSettings } from "@helpers/settings";
-import { getCurrentUserFollowFiltered } from "@helpers/user";
 import { getVideosByDay } from "@helpers/video";
 import { getWeek } from "@helpers/week";
 
@@ -19,28 +17,17 @@ export const Calendar = () => {
     const settings = useRecoilValue(getSettings)
     const week     = useRecoilValue(getWeek);
 
-    const loadableUsers       = useRecoilValueLoadable(getCurrentUserFollowFiltered);
     const loadableVideosByDay = useRecoilValueLoadable(getVideosByDay);
 
+    const [videosByDay, setVideosByDay] = useState<VideoModel[][]>([...Array(7).keys()].map(_ => []));
+
+    useEffect(() => {
+        if (loadableVideosByDay.state === "hasValue" && Array.isArray(loadableVideosByDay.contents)) {
+            setVideosByDay(loadableVideosByDay.contents);
+        }
+    }, [loadableVideosByDay]);
+
     const startOfWeek = week.startOf("week");
-
-    const vignetteMarginTopBottom = 6;
-    const vignetteHeight = 80 + vignetteMarginTopBottom;
-
-    let users: UserProps[] = [];
-    let videosByDay: VideoModel[][] = [...Array(7).keys()].map(_ => []);
-
-    if (loadableUsers.state === "hasValue") {
-        users = loadableUsers.contents;
-    }
-
-    if (loadableVideosByDay.state === "hasValue") {
-        videosByDay = loadableVideosByDay.contents;
-    }
-
-    if (loadableVideosByDay.state === "hasError") {
-        console.error(loadableVideosByDay);
-    }
 
     const timeline = [...Array(25).keys()].map((hour) => {
         if (settings.is24Hour) {
@@ -58,36 +45,12 @@ export const Calendar = () => {
                 </div>
 
                 { videosByDay.map((videos, index) => {
-                    const { videos: videosWithLineInfo, maxLineIndex } = laConcu(videos);
-
-                    return (
-                        <div key={ index } className="calendar--line" style={{ minHeight: ((vignetteHeight * maxLineIndex) + vignetteMarginTopBottom) + "px" }}>
-                            <div className="calendar--line__day">{ Info.weekdays("short",  { locale: settings.locale })[index] }<br/>{ startOfWeek.plus({ days: index }).toFormat("dd/MM") }</div>
-
-                            <div className="calendar--line__content">
-                                <div className="calendar--line__time">
-                                    { timeline.map((_, index) => <div key={ index }></div>) }
-                                </div>
-
-                                { videosWithLineInfo.map(video => {
-                                    const style: { style: React.CSSProperties } = {
-                                        style : {
-                                            left     : ((video.start_in_seconds / SECONDS_IN_DAY) * 100) + "%",
-                                            width    : ((video.duration_in_seconds / SECONDS_IN_DAY) * 100) + "%",
-                                            minWidth : ((video.duration_in_seconds / SECONDS_IN_DAY) * 100) + "%",
-                                            top      : ((vignetteHeight * (video.lineIndex || 0)) + vignetteMarginTopBottom) + "px"
-                                        }
-                                    }
-
-                                    const user = users.find((user) => user.id === video.user_id);
-
-                                    return (
-                                        <Video key={ video.id } style={ style.style } user={ user } video={ video } />
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
+                    return <Day
+                        key={ index }
+                        label={ Info.weekdays("short",  { locale: settings.locale })[index] + '\n' + startOfWeek.plus({ days: index }).toFormat("dd/MM") }
+                        timeline={ timeline }
+                        videos={ videos }
+                    />
                 }) }
             </div>
 
@@ -97,6 +60,50 @@ export const Calendar = () => {
         </div>
     );
 }
+
+const Day = memo(({
+    label,
+    timeline,
+    videos,
+}: {
+    label: string,
+    timeline: any[],
+    videos: VideoModel[],
+}) => {
+    const vignetteMarginTopBottom = 6;
+    const vignetteHeight = 80 + vignetteMarginTopBottom;
+
+    const { videos: videosWithLineInfo, maxLineIndex } = laConcu(videos);
+
+    return (
+        <div className="calendar--line" style={{ minHeight: ((vignetteHeight * maxLineIndex) + vignetteMarginTopBottom) + "px" }}>
+            <div className="calendar--line__day">{ label }</div>
+
+            <div className="calendar--line__content">
+                { videosWithLineInfo.map(video => {
+                    const style: { style: React.CSSProperties } = {
+                        style : {
+                            left     : ((video.start_in_seconds / SECONDS_IN_DAY) * 100) + "%",
+                            width    : ((video.duration_in_seconds / SECONDS_IN_DAY) * 100) + "%",
+                            minWidth : ((video.duration_in_seconds / SECONDS_IN_DAY) * 100) + "%",
+                            top      : ((vignetteHeight * (video.lineIndex || 0)) + vignetteMarginTopBottom) + "px"
+                        }
+                    }
+
+                    return (
+                        <Suspense key={ video.id }>
+                            <Video style={ style.style } video={ video } />
+                        </Suspense>
+                    );
+                })}
+
+                <div className="calendar--line__time">
+                    { timeline.map((_, index) => <div key={ index }></div>) }
+                </div>
+            </div>
+        </div>
+    );
+}, (prev, next) => prev.videos.length === next.videos.length);
 
 const isBeetween = (number: number, min: number, max: number) => {
     return number >= min && number < max;

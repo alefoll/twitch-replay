@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { User, UserProps } from "@components/User";
+import { User, UserModel } from "@components/User";
 
 import { getCurrentUserFollow, getFilteredUsers } from "@helpers/user";
 
@@ -26,7 +26,7 @@ const SidebarContent = () => {
 
     const [filteredUsers, setFilteredUsers] = useRecoilState(getFilteredUsers);
 
-    const filterUser = (user: UserProps) => {
+    const filterUser = (user: UserModel) => {
         if (filteredUsers.includes(user)) {
             return setFilteredUsers(filteredUsers.filter((filteredUser) => filteredUser.id !== user.id));
         }

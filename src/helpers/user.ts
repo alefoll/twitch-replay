@@ -1,11 +1,11 @@
-import { atom, selector, selectorFamily, waitForAny } from "recoil";
+import { atom, noWait, selector, selectorFamily, waitForAny } from "recoil";
 import { colord } from "colord";
 
 import { api } from "@helpers/api";
 import { getStreams } from "@helpers/stream";
 import { getVideoByUserID } from "@helpers/video";
 
-import { UserFollow, UserModel, UserProps } from "@components/User";
+import { UserColor, UserFollow, UserModel } from "@components/User";
 import { VideoModel } from "@components/Video";
 
 export const getCurrentUser = selector<UserModel>({
@@ -13,7 +13,7 @@ export const getCurrentUser = selector<UserModel>({
     get: async ({ get }) => get(getUsers(undefined))[0],
 });
 
-export const getCurrentUserFollow = selector<UserProps[]>({
+export const getCurrentUserFollow = selector<UserModel[]>({
     key: "getCurrentUserFollow",
     get: async ({ get }) => {
         const me = get(getCurrentUser);
@@ -22,13 +22,15 @@ export const getCurrentUserFollow = selector<UserProps[]>({
 
         const userFollows = get(getUsers(follows.map(_ => _.broadcaster_id)));
 
+        get(noWait(getUsersColor(follows.map(_ => _.broadcaster_id))));
+
         const userFollowsSorted = [...userFollows].sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
 
         return userFollowsSorted;
     }
 });
 
-export const getCurrentUserFollowFiltered = selector<UserProps[]>({
+export const getCurrentUserFollowFiltered = selector<UserModel[]>({
     key: "getCurrentUserFollowFiltered",
     get: ({ get }) => {
         const userFollows = get(getCurrentUserFollow);
@@ -90,66 +92,101 @@ export const getCurrentUserFollowFilteredLives = selector({
     }
 });
 
-export const getFilteredUsers = atom<UserProps[]>({
+export const getFilteredUsers = atom<UserModel[]>({
     key: "getFilteredUsers",
     default: [],
 });
 
-export const getUsers = selectorFamily<UserProps[], string[] | undefined>({
-    key: "getUsers",
+const userColorAtom = atom<Map<string, UserColor>>({
+    key: "userColorAtom",
+    default: new Map<string, UserColor>(),
+});
+
+export const getUserColor = selectorFamily<UserColor, string>({
+    key: "getUserColor",
+    get: id => async({ get }) => {
+        const atom = get(userColorAtom);
+
+        return atom.get(id) || get(getUsersColor([id]))[0];
+    }
+});
+
+export const getUsersColor = selectorFamily<UserColor[], string[]>({
+    key: "getUsersColor",
     get: ids => async({ get }) => {
-        let query = "";
+        const atom = get(userColorAtom);
 
-        if (ids && ids.length) {
-            query = "?id=" + ids.slice(0, 100).join("&id="); // API limit 100
-        }
+        const idsToFetch = ids.filter(id => !atom.has(id));
 
-        const request = get(api({
-            path: `users${ query }`,
-        }));
-
-        const users = request.data;
-
-        const usersColor: Map<string, string>= new Map();
-
-        if (ids && ids.length) {
-            query = "?user_id=" + ids.slice(0, 100).join("&user_id="); // API limit 100
+        if (idsToFetch.length > 0) {
+            const query = "?user_id=" + idsToFetch.slice(0, 100).join("&user_id="); // API limit 100
 
             const colorsRequest = get(api({
                 path: `chat/color${ query }`,
             }));
 
-            colorsRequest.data.map((data: { user_id: string, color: string }) => usersColor.set(data.user_id, data.color));
+            colorsRequest.data.map((data: { user_id: string, color: string }) => atom.set(data.user_id, {
+                value    : data.color,
+                contrast : colord(data.color).brightness() >= 0.7,
+            }));
         }
 
-        const defaultColors = [
-            "#9147ff",
-            "#fa1fd1",
-            "#8205b5",
-            "#00c7b0",
-            "#1f69ff",
-            "#fab5ff",
-            "#fa2929",
-            "#57bee6",
-            "#bf0078",
-            "#fc6675",
-            "#40145e",
-            "#ff6905",
-            "#bfabff",
-            "#ffc95e",
-            "#0014a6",
-        ]
-
-        return users.map((user: UserModel) => {
-            const color = usersColor.get(user.id) ?? defaultColors[Math.floor(defaultColors.length * Math.random())];
-
-            return {
-                ...user,
-                color,
-                contrast: colord(color).brightness() >= 0.7,
+        return ids.map(id => {
+            if (!atom.has(id)) {
+                throw new Error(`No color found for id: ${ id }`);
             }
-        });
 
+            return atom.get(id);
+        }) as UserColor[];
+    }
+});
+
+const userAtom = atom<Map<string, UserModel>>({
+    key: "userAtom",
+    default: new Map<string, UserModel>(),
+});
+
+export const getUser = selectorFamily<UserModel, string>({
+    key: "getUser",
+    get: id => async({ get }) => {
+        const atom = get(userAtom);
+
+        return atom.get(id) || get(getUsers([id]))[0];
+    }
+});
+
+export const getUsers = selectorFamily<UserModel[], string[] | undefined>({
+    key: "getUsers",
+    get: ids => async({ get }) => {
+        const atom = get(userAtom);
+
+        const idsToFetch = ids ? ids.filter(id => !atom.has(id)) : [""];
+
+        if (idsToFetch.length > 0) {
+            const query = ids ? "?id=" + idsToFetch.slice(0, 100).join("&id=") : ""; // API limit 100
+
+            const request = get(api({
+                path: `users${ query }`,
+            }));
+
+            request.data.map((user: UserModel) => atom.set(user.id, user));
+
+            if (!ids) {
+                return request.data;
+            }
+        }
+
+        if (!ids) {
+            throw new Error("You're not supposed to be here :thonk:");
+        }
+
+        return ids.map(id => {
+            if (!atom.has(id)) {
+                throw new Error(`No user found for id: ${ id }`);
+            }
+
+            return atom.get(id);
+        }) as UserModel[];
     }
 });
 

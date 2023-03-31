@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 
 import { VideoModel } from "@components/Video";
 
-import { getCurrentUserFollowLives } from "@helpers/user";
+import { getCurrentUserFollowLives, getUserColor } from "@helpers/user";
 
 import "./style.css";
 
@@ -30,8 +30,8 @@ export interface UserModel {
     video_pagination?: string;
 }
 
-export interface UserProps extends UserModel {
-    color: string;
+export interface UserColor {
+    value: string;
     contrast: boolean;
 }
 
@@ -41,11 +41,10 @@ export const User = ({
     user,
 }: {
     hide    ?: boolean,
-    onClick ?: (user: UserProps) => void,
-    user     : UserProps,
+    onClick ?: (user: UserModel) => void,
+    user     : UserModel,
 }) => {
     const {
-        color,
         display_name,
         id,
         login,
@@ -53,11 +52,12 @@ export const User = ({
     } = user;
 
     const lives = useRecoilValue(getCurrentUserFollowLives);
+    const color = useRecoilValue(getUserColor(user.id));
 
     const isLive = lives.find((live) => live.user_id === id);
 
     const style: React.CSSProperties = {
-        borderColor: color,
+        borderColor: color.value,
     }
 
     if (onClick) {

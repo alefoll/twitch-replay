@@ -1,6 +1,8 @@
 import React from "react";
+import { useRecoilValue } from "recoil";
 
-import { User, UserProps } from "@components/User";
+import { User } from "@components/User";
+import { getUser, getUserColor } from "@helpers/user";
 
 import "./style.css";
 
@@ -35,12 +37,10 @@ export interface VideoModel extends VideoApiModel {
 }
 
 export const Video = ({
-    style,
-    user,
+    style: inheritedStyle,
     video,
 }: {
     style: React.CSSProperties,
-    user?: UserProps,
     video: VideoModel,
 }) => {
     const {
@@ -51,8 +51,12 @@ export const Video = ({
         thumbnail_url,
         type,
         url,
-        viewer_count
+        user_id,
+        viewer_count,
     } = video;
+
+    const user = useRecoilValue(getUser(user_id));
+    const userColor = useRecoilValue(getUserColor(user_id));
 
     const className = ["video"];
     const isLive    = (type === "live");
@@ -69,15 +73,11 @@ export const Video = ({
         className.push("video--stream");
     }
 
-    if (user?.color) {
-        if (isLive) {
-            style.background = `linear-gradient(to right, ${ user.color } calc(100% - 42px), transparent)`;
-        } else {
-            style.backgroundColor = user.color;
-        }
-    }
+    const style = isLive
+        ? { ...inheritedStyle, background: `linear-gradient(to right, ${ userColor.value } calc(100% - 42px), transparent)` }
+        : { ...inheritedStyle, backgroundColor: userColor.value };
 
-    if (user?.contrast) {
+    if (userColor.contrast) {
         className.push("contrast");
     }
 
