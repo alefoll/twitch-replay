@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { RecoilRoot } from "recoil";
 
 import { App } from "@components/App";
+import { ErrorBoundary } from "@components/ErrorBoundary";
 
 import "../assets/favicon.png";
 import "../assets/follow.png";
@@ -18,7 +19,9 @@ const container = document.querySelector("#app");
 if (container) {
     createRoot(container).render(
         <RecoilRoot>
-            <App />
+            <ErrorBoundary>
+                <App />
+            </ErrorBoundary>
         </RecoilRoot>
     );
 }

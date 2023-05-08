@@ -1,6 +1,6 @@
 {
   "name": "twitch-replay",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "main": "dist/main.js",
   "repository": "git@github.com:alefoll/twitch-replay.git",
   "license": "MIT",

@@ -1,4 +1,4 @@
-import { selector, selectorFamily } from "recoil";
+import { noWait, selector, selectorFamily } from "recoil";
 import { DateTime, Duration } from "luxon";
 
 import { api } from "@helpers/api";
@@ -13,6 +13,7 @@ const SECONDS_IN_DAY = 86400;
 export const getVideosByWeek = selector({
     key: "getVideosByWeek",
     get: async({ get }) => {
+        const lives    = get(noWait(getCurrentUserFollowFilteredLives));
         const settings = get(getSettings);
         const users    = get(getCurrentUserFollowFiltered);
         const videos   = get(getCurrentUserFollowFilteredVideos);
@@ -34,11 +35,9 @@ export const getVideosByWeek = selector({
 
         const currentDate = DateTime.local().setZone("utc");
 
-        if (startOfWeek < currentDate && currentDate < endOfWeek) {
-            const lives = get(getCurrentUserFollowFilteredLives);
-
-            lives.map((live) => {
-                const user = users.find(user => user.id === live.user_id);
+        if (startOfWeek < currentDate && currentDate < endOfWeek && lives.state === "hasValue") {
+            lives.contents.map((live) => {
+                const user = users.find(user => user.broadcaster_id === live.user_id);
 
                 if (!user) {
                     throw new Error;
@@ -46,7 +45,7 @@ export const getVideosByWeek = selector({
 
                 filter.push({
                     ...live,
-                    url: `https://www.twitch.tv/${ user.login }`
+                    url: `https://www.twitch.tv/${ user.broadcaster_login }`
                 });
 
             });

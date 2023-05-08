@@ -36,6 +36,10 @@ body.modal--open {
     flex-direction: row;
 }
 
+#app:has(.error) {
+    animation: colorTransition 5s alternate infinite;
+}
+
 h1 {
     font-size: 54px;
 }

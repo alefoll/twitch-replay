@@ -1,5 +1,9 @@
 {
     "translation": {
+        "error-boundary": {
+            "error": "It's broken 😢",
+            "reset": "Fix it"
+        },
         "header": {
             "title": "Replay Calendar"
         },

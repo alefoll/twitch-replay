@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 
-const TOKENKEY = "twitch-token";
+export const TOKENKEY = "twitch-token";
 
 const tokenAtom = atom({
     key: "tokenAtom",

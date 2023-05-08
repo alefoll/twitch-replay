@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 
 import { User, UserModel } from "@components/User";
 
-import { getCurrentUserFollow, getFilteredUsers } from "@helpers/user";
+import { getCurrentUserFollowModel, getFilteredUsers } from "@helpers/user";
 
 import "./style.css";
 
@@ -22,7 +22,7 @@ export const Sidebar = () => {
 }
 
 const SidebarContent = () => {
-    const users = useRecoilValue(getCurrentUserFollow);
+    const users = useRecoilValue(getCurrentUserFollowModel);
 
     const [filteredUsers, setFilteredUsers] = useRecoilState(getFilteredUsers);
 

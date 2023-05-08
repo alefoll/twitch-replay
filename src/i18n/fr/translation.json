@@ -1,5 +1,9 @@
 {
     "translation": {
+        "error-boundary": {
+            "error": "Oups, ça marche plus 🥵",
+            "reset": "Réparer"
+        },
         "header": {
             "title": "Calendrier des VODs"
         },

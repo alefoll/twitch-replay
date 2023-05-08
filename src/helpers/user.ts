@@ -8,29 +8,56 @@ import { getVideoByUserID } from "@helpers/video";
 import { UserColor, UserFollow, UserModel } from "@components/User";
 import { VideoModel } from "@components/Video";
 
-export const getCurrentUser = selector<UserModel>({
-    key: "getCurrentUser",
-    get: async ({ get }) => get(getUsers(undefined))[0],
+export const USERIDKEY = "twitch-user_id";
+
+const getCurrentUserId = selector<string>({
+    key: "getCurrentUserId",
+    get: async ({ get }) => {
+        const local = window.localStorage.getItem(USERIDKEY);
+
+        if (local) {
+            return local;
+        }
+
+        const user = get(getUsers(undefined))[0];
+
+        window.localStorage.setItem(USERIDKEY, user.id);
+
+        return user.id;
+    },
 });
 
-export const getCurrentUserFollow = selector<UserModel[]>({
+export const getCurrentUserFollow = selector<UserFollow[]>({
     key: "getCurrentUserFollow",
     get: async ({ get }) => {
-        const me = get(getCurrentUser);
+        const me = get(getCurrentUserId);
 
-        const follows = get(getUserFollows(me.id));
-
-        const userFollows = get(getUsers(follows.map(_ => _.broadcaster_id)));
+        const follows = get(getUserFollows(me));
 
         get(noWait(getUsersColor(follows.map(_ => _.broadcaster_id))));
 
-        const userFollowsSorted = [...userFollows].sort((a, b) => a.display_name.toLocaleLowerCase().localeCompare(b.display_name.toLocaleLowerCase()));
+        const userFollowsSorted = [...follows].sort((a, b) => a.broadcaster_login.toLocaleLowerCase().localeCompare(b.broadcaster_login.toLocaleLowerCase()));
 
         return userFollowsSorted;
     }
 });
 
-export const getCurrentUserFollowFiltered = selector<UserModel[]>({
+export const getCurrentUserFollowModel = selector<UserModel[]>({
+    key: "getCurrentUserFollowModel",
+    get: async ({ get }) => {
+        const me = get(getCurrentUserId);
+
+        const follows = get(getUserFollows(me));
+
+        const userFollows = get(getUsers(follows.map(_ => _.broadcaster_id)));
+
+        const userFollowsSorted = [...userFollows].sort((a, b) => a.id.toLocaleLowerCase().localeCompare(b.id.toLocaleLowerCase()));
+
+        return userFollowsSorted;
+    }
+});
+
+export const getCurrentUserFollowFiltered = selector<UserFollow[]>({
     key: "getCurrentUserFollowFiltered",
     get: ({ get }) => {
         const userFollows = get(getCurrentUserFollow);
@@ -41,7 +68,7 @@ export const getCurrentUserFollowFiltered = selector<UserModel[]>({
             return userFollows;
         }
 
-        return userFollows.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.id));
+        return userFollows.filter((user) =>  filteredUsers.find((filteredUser) => filteredUser.id === user.broadcaster_id));
     }
 });
 
@@ -51,7 +78,7 @@ export const getCurrentUserFollowFilteredVideos = selector({
         const userFollows = get(getCurrentUserFollowFiltered);
 
         const videos = get(waitForAny(
-            userFollows.map(user => getVideoByUserID(user.id))
+            userFollows.map(user => getVideoByUserID(user.broadcaster_id))
         ));
 
         const result = videos.reduce((previous, current) => {
@@ -71,7 +98,7 @@ export const getCurrentUserFollowLives = selector({
     get: async ({ get }) => {
         const userFollows = get(getCurrentUserFollow);
 
-        const live = get(getStreams(userFollows.map(user => user.id)));
+        const live = get(getStreams(userFollows.map(user => user.broadcaster_id)));
 
         return live;
     }
