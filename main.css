@@ -36,6 +36,10 @@ body.modal--open {
     flex-direction: row;
 }
 
+#app:has(.error) {
+    animation: colorTransition 5s alternate infinite;
+}
+
 h1 {
     font-size: 54px;
 }
@@ -676,4 +680,31 @@ a {
     margin-left: 64px;
 }
 
+
+.error {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(200deg, #9146FF 35%, hsl(169, 100%, 50%) 100%);
+    animation: colorTransition 5s alternate infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error--container {
+    background-color: #000000;
+    border-radius: 4px;
+    padding: 10px 20px 30px;
+}
+
+.error--container__title {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    font-weight: 600;
+    margin: 20px 0;
+}
 
