@@ -16,6 +16,14 @@
 
         <script src="./main.js"></script>
 
-        <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="f1b8dad1-9173-4764-a297-ffbc49f7bc3e" async></script>
+        <script type='text/javascript'>
+            window.smartlook || (function (d) {
+                var o = smartlook = function () { o.api.push(arguments) }, h = d.getElementsByTagName('head')[0];
+                var c = d.createElement('script'); o.api = new Array(); c.async = true; c.type = 'text/javascript';
+                c.charset = 'utf-8'; c.src = 'https://web-sdk.smartlook.com/recorder.js'; h.appendChild(c);
+            })(document);
+
+            smartlook('init', '6b0871215495a4d6be7f030e5a5fea92cdabbf88', { region: 'eu' });
+        </script>
     </body>
 </html>
