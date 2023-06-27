@@ -1,5 +1,6 @@
 import { atom, noWait, selector, selectorFamily, waitForAny } from "recoil";
 import { colord } from "colord";
+import Smartlook from "smartlook-client";
 
 import { api } from "@helpers/api";
 import { getStreams } from "@helpers/stream";
@@ -8,22 +9,37 @@ import { getVideoByUserID } from "@helpers/video";
 import { UserColor, UserFollow, UserModel } from "@components/User";
 import { VideoModel } from "@components/Video";
 
-export const USERIDKEY = "twitch-user_id";
+export const USERDATAKEY = "twitch-user-data";
 
 const getCurrentUserId = selector<string>({
     key: "getCurrentUserId",
     get: async ({ get }) => {
-        const local = window.localStorage.getItem(USERIDKEY);
+        let localData = window.localStorage.getItem(USERDATAKEY);
 
-        if (local) {
-            return local;
+        if (!localData) {
+            const { broadcaster_type, display_name, id, type } = get(getUsers(undefined))[0];
+
+            localData = JSON.stringify({
+                broadcaster_type,
+                id,
+                name: display_name,
+                type,
+            });
+
+            window.localStorage.setItem(USERDATAKEY, localData);
         }
 
-        const user = get(getUsers(undefined))[0];
+        const userData = JSON.parse(localData);
 
-        window.localStorage.setItem(USERIDKEY, user.id);
+        try {
+            Smartlook.identify(userData.id, {
+                broadcaster_type: userData.broadcaster_type,
+                name: userData.display_name,
+                type: userData.type,
+            });
+        } catch {};
 
-        return user.id;
+        return userData.id;
     },
 });
 

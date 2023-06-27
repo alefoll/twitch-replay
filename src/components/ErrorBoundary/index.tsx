@@ -1,7 +1,7 @@
 import React from "react";
 import { Translation } from "react-i18next";
 
-import { USERIDKEY } from "@helpers/user";
+import { USERDATAKEY } from "@helpers/user";
 import { TOKENKEY } from "@helpers/token";
 
 import "./style.css";
@@ -21,7 +21,7 @@ export class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
 
     reset() {
         window.localStorage.removeItem(TOKENKEY);
-        window.localStorage.removeItem(USERIDKEY);
+        window.localStorage.removeItem(USERDATAKEY);
 
         window.location.reload();
     }

@@ -103,7 +103,7 @@ const Day = memo(({
             </div>
         </div>
     );
-}, (prev, next) => prev.videos.length === next.videos.length);
+}, (prev, next) => JSON.stringify(prev.videos) === JSON.stringify(next.videos) && prev.label === next.label);
 
 const isBeetween = (number: number, min: number, max: number) => {
     return number >= min && number < max;
