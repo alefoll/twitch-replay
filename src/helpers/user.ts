@@ -67,7 +67,7 @@ export const getCurrentUserFollowModel = selector<UserModel[]>({
 
         const userFollows = get(getUsers(follows.map(_ => _.broadcaster_id)));
 
-        const userFollowsSorted = [...userFollows].sort((a, b) => a.id.toLocaleLowerCase().localeCompare(b.id.toLocaleLowerCase()));
+        const userFollowsSorted = [...userFollows].sort((a, b) => a.login.toLocaleLowerCase().localeCompare(b.login.toLocaleLowerCase()));
 
         return userFollowsSorted;
     }
@@ -225,11 +225,14 @@ export const getUsers = selectorFamily<UserModel[], string[] | undefined>({
 
         return ids.map(id => {
             if (!atom.has(id)) {
-                throw new Error(`No user found for id: ${ id }`);
+                // NOTE: Don't thow, maybe the user is banned
+                // throw new Error(`No user found for id: ${ id }`);
+                console.warn(`Unable to found user with id: ${ id }, maybe the user is banned or deleted his account`);
+                return;
             }
 
             return atom.get(id);
-        }) as UserModel[];
+        }).filter(Boolean) as UserModel[];
     }
 });
 
