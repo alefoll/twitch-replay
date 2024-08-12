@@ -101,7 +101,7 @@ const getThumbnail = (url: string) => {
     return url.replace(/%?{width}x%?{height}/, "320x180");
 }
 
-const format = (number: number) => {
+export const format = (number: number) => {
     return new Intl.NumberFormat("en", {
         notation: "compact",
     }).format(number);

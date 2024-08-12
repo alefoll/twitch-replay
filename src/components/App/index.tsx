@@ -5,6 +5,7 @@ import "@i18n/config";
 
 import { Calendar } from "@components/Calendar";
 import { Header } from "@components/Header";
+import { LiveList } from "@components/LiveList";
 import { Login } from "@components/Login";
 import { Sidebar } from "@components/Sidebar";
 
@@ -44,6 +45,8 @@ export const App = () => {
 
             <main className="app">
                 <Header />
+
+                <LiveList />
 
                 <Calendar />
             </main>

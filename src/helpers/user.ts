@@ -1,6 +1,5 @@
 import { atom, noWait, selector, selectorFamily, waitForAny } from "recoil";
 import { colord } from "colord";
-import Smartlook from "smartlook-client";
 
 import { api } from "@helpers/api";
 import { getStreams } from "@helpers/stream";
@@ -30,14 +29,6 @@ const getCurrentUserId = selector<string>({
         }
 
         const userData = JSON.parse(localData);
-
-        try {
-            Smartlook.identify(userData.id, {
-                broadcaster_type: userData.broadcaster_type,
-                name: userData.display_name,
-                type: userData.type,
-            });
-        } catch {};
 
         return userData.id;
     },

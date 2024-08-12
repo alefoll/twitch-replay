@@ -1,5 +1,5 @@
 .user {
-    height: 48px;
+    height: calc(100% - 8px);
     padding: 4px;
     display: block;
     position: relative;
@@ -11,7 +11,7 @@
 }
 
 .user img {
-    height: 100%;
+    height: calc(100% - 4px);
     background-color: #000000;
     border-radius: 50%;
     border-style: solid;

@@ -39,6 +39,10 @@
     overflow: auto;
 }
 
+.sidebar--userlist .user {
+    height: 54px;
+}
+
 .sidebar--userlist::-webkit-scrollbar {
   display: none;
 }

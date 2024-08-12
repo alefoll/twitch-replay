@@ -1,0 +1,32 @@
+.live-list {
+    height: 48px;
+    margin: 0 16px 16px 16px;
+    overflow: hidden;
+    display: flex;
+}
+
+.live-list .user--live {
+    display: none;
+}
+
+.live-list--badge {
+    width: 256px;
+    margin-right: 12px;
+    border-radius: 4px;
+    padding: 2px 12px 2px 0;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+}
+
+.live-list--badge__data {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.live-list--badge__firstline {
+    display: flex;
+    font-weight: 600;
+}
+
