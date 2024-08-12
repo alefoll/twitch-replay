@@ -114,7 +114,7 @@ a {
 }
 
 .user {
-    height: 48px;
+    height: calc(100% - 8px);
     padding: 4px;
     display: block;
     position: relative;
@@ -126,7 +126,7 @@ a {
 }
 
 .user img {
-    height: 100%;
+    height: calc(100% - 4px);
     background-color: #000000;
     border-radius: 50%;
     border-style: solid;
@@ -490,6 +490,39 @@ a {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+.live-list {
+    height: 48px;
+    margin: 0 16px 16px 16px;
+    overflow: hidden;
+    display: flex;
+}
+
+.live-list .user--live {
+    display: none;
+}
+
+.live-list--badge {
+    width: 256px;
+    margin-right: 12px;
+    border-radius: 4px;
+    padding: 2px 12px 2px 0;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+}
+
+.live-list--badge__data {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.live-list--badge__firstline {
+    display: flex;
+    font-weight: 600;
+}
+
+
 .login {
     position: absolute;
     top: 0;
@@ -667,6 +700,10 @@ a {
 .sidebar--userlist {
     flex: 1 1 auto;
     overflow: auto;
+}
+
+.sidebar--userlist .user {
+    height: 54px;
 }
 
 .sidebar--userlist::-webkit-scrollbar {
