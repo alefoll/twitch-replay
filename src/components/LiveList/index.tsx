@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { useRecoilValue } from "recoil";
 
 import { format, VideoModel } from "@components/Video";
@@ -9,8 +9,20 @@ import { getCurrentUserFollowLives, getCurrentUserFollowModel, getUserColor } fr
 import "./style.css";
 
 export const LiveList = () => {
+    return (
+        <Suspense fallback={<></>}>
+            <LiveListContent />
+        </Suspense>
+    );
+}
+
+const LiveListContent = () => {
     const lives = useRecoilValue(getCurrentUserFollowLives);
     const users = useRecoilValue(getCurrentUserFollowModel);
+
+    if (lives.length === 0) {
+        return (<></>);
+    }
 
     return (
         <div className="live-list">
@@ -18,7 +30,7 @@ export const LiveList = () => {
                 const user = users.find(user => user.id === live.user_id);
 
                 if (!user) {
-                    throw new Error;
+                    throw new Error(`No user found for id: ${ live.user_id }`);
                 }
 
                 return LiveBadge({ live, user });
