@@ -19,6 +19,10 @@
     color: #ffffff;
 }
 
+.live-list--badge.contrast {
+    color: #000000;
+}
+
 .live-list--badge__data {
     display: flex;
     flex-direction: column;
