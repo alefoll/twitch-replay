@@ -63,13 +63,13 @@ const LiveBadge = ({
             <User user={ user } />
 
             <div className="live-list--badge__data">
-                <span className="live-list--badge__firstline">
+                <div className="live-list--badge__streamer">
                     { user.display_name }
                     <span className="spacer" />
                     🔴 { format(live.viewer_count!) }
-                </span>
+                </div>
 
-                { live.game_name }
+                <div className="live-list--badge__game">{ live.game_name }</div>
             </div>
         </a>
     );
