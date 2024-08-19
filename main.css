@@ -519,11 +519,19 @@ a {
     display: flex;
     flex-direction: column;
     width: 100%;
+    overflow: hidden;
 }
 
-.live-list--badge__firstline {
+.live-list--badge__streamer {
     display: flex;
     font-weight: 600;
+}
+
+.live-list--badge__game {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
