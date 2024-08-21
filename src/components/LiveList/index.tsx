@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import { format, VideoModel } from "@components/Video";
 import { User, UserModel } from "@components/User";
 
-import { getCurrentUserFollowLives, getCurrentUserFollowModel, getUserColor } from "@helpers/user";
+import { getCurrentUserFollowLives, getUser, getUserColor } from "@helpers/user";
 
 import "./style.css";
 
@@ -18,7 +18,6 @@ export const LiveList = () => {
 
 const LiveListContent = () => {
     const lives = useRecoilValue(getCurrentUserFollowLives);
-    const users = useRecoilValue(getCurrentUserFollowModel);
 
     if (lives.length === 0) {
         return (<></>);
@@ -26,27 +25,18 @@ const LiveListContent = () => {
 
     return (
         <div className="live-list">
-            { lives.map((live) => {
-                const user = users.find(user => user.id === live.user_id);
-
-                if (!user) {
-                    throw new Error(`No user found for id: ${ live.user_id }`);
-                }
-
-                return LiveBadge({ live, user });
-            }) }
+            { lives.map((live) => LiveBadge({ live })) }
         </div>
     );
 }
 
 const LiveBadge = ({
     live,
-    user,
 }: {
     live: VideoModel,
-    user: UserModel
 }) => {
-    const userColor = useRecoilValue(getUserColor(user.id));
+    const user = useRecoilValue(getUser(live.user_id));
+    const userColor = useRecoilValue(getUserColor(live.user_id));
 
     const style: React.CSSProperties = {
         backgroundColor: userColor.value,

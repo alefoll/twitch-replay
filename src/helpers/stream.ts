@@ -14,12 +14,16 @@ export const getStreams = selectorFamily<VideoModel[], string[]>({
 
         do {
             const request = get(api({
-                path: `streams?user_id=${ ids.slice(0, 100).join("&user_id=") }&after=${ pagination }`
+                path: `streams?user_id=${ ids.slice(0, 100).join("&user_id=") }&first=100&after=${ pagination }`
             }));
 
             streams = [...streams, ...request.data];
 
-            pagination = request.pagination.cursor || "";
+            // WEIRD: Twitch always return a new pagination to a empty page,
+            // so fetch the 2nd page if current livestreams close to "first" params (max 100) and avoid another useless network request
+            if (request.data.length >= 99) {
+                pagination = request.pagination.cursor || "";
+            }
         } while (pagination !== "");
 
         return streams.map((stream) => {

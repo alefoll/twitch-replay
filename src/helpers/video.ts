@@ -57,7 +57,7 @@ export const getVideosByWeek = selector({
 
 export const getVideosByDay = selector({
     key: "getVideosByDay",
-    get: ({ get }) => {
+    get: async({ get }) => {
         const settings = get(getSettings);
         const videos   = get(getVideosByWeek);
         const week     = get(getWeek);
